@@ -3,9 +3,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using WebApplication1.Infra;
-using WebApplication1.Infra.Configurations;
-using WebApplication1.Mapping;
+using WebApplication1.Data;
+using WebApplication1.Data.Configurations;
+using WebApplication1.Infra.Interceptors;
+using WebApplication1.Mappings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,10 +22,12 @@ builder.Services.AddAutoMapper(cfg => { }, typeof(Program).Assembly);
 
 
 
-
-
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")).AddInterceptors(
+        new AuditoriaInterceptor(),
+        new SoftDeleteInterceptor()));
+    
 
 
 // Add services to the container.
