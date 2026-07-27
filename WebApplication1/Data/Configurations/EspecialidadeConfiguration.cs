@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using WebApplication1.Models;
+using WebApplication1.Domain.Models;
 
-namespace WebApplication1.Infra.Configurations;
+namespace WebApplication1.Data.Configurations;
 
 public class EspecialidadeConfiguration  : IEntityTypeConfiguration<Especialidade>
 {
