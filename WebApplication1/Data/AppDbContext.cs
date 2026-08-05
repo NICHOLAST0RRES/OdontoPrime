@@ -31,12 +31,16 @@ public class AppDbContext : DbContext
     }
     
     // tables 
-    public DbSet<Medico> Medicos => Set<Medico>();
-    public DbSet<Especialidade> Especialidades => Set<Especialidade>();
     
     public DbSet<Paciente> Pacientes => Set<Paciente>();
     
     public DbSet<Convenio> Convenios => Set<Convenio>();
+    
+    public DbSet<Profissional> Profissionais { get; set; }
+    public DbSet<TipoProfissional> TipoProfissionais { get; set; }
+    
+    public DbSet<Consulta> Consultas { get; set; }
+
 
     
     

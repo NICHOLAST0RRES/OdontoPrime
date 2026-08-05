@@ -2,7 +2,7 @@ using WebApplication1.Domain.Models;
 
 namespace WebApplication1.Api.Dtos.Medico;
 
-public class MedicoRequestDTO
+public record MedicoRequestDTO 
 {
     public int Id { get; set; }
     public string Nome { get; set; }
