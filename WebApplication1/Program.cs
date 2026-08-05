@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -7,6 +8,7 @@ using WebApplication1.Data;
 using WebApplication1.Data.Configurations;
 using WebApplication1.Infra.Interceptors;
 using WebApplication1.Mappings;
+using WebApplication1.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +35,20 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Add services to the container.
 builder.Services.AddRazorPages();
 
+// HttpClient usado pelas Razor Pages para consumir a própria API (mesmo processo).
+// O BaseAddress é montado a partir da requisição atual, então funciona em qualquer porta/host/ambiente.
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient("Api", (sp, client) =>
+{
+    var httpContext = sp.GetRequiredService<IHttpContextAccessor>().HttpContext!;
+    client.BaseAddress = new Uri($"{httpContext.Request.Scheme}://{httpContext.Request.Host}");
+});
+
+builder.Services.AddScoped<IPacienteApiService, PacienteApiService>();
+builder.Services.AddScoped<IProfissionalApiService, ProfissionalApiService>();
+builder.Services.AddScoped<IConsultaApiService, ConsultaApiService>();
+builder.Services.AddScoped<IConvenioApiService, ConvenioApiService>();
+builder.Services.AddScoped<ITipoProfissionalApiService, TipoProfissionalApiService>();
 
 var app = builder.Build();
 

@@ -1,0 +1,52 @@
+@page
+@model WebApplication1.Pages.Pacientes.CreateModel
+@{
+    ViewData["Title"] = "Novo paciente";
+}
+
+<h1>Novo paciente</h1>
+
+<div asp-validation-summary="All" class="text-danger"></div>
+
+<form method="post" class="row g-3" style="max-width: 640px;">
+    <div class="col-md-8">
+        <label asp-for="Input.Nome" class="form-label"></label>
+        <input asp-for="Input.Nome" class="form-control"/>
+        <span asp-validation-for="Input.Nome" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="Input.Cpf" class="form-label">CPF</label>
+        <input asp-for="Input.Cpf" class="form-control" maxlength="11" placeholder="Somente números"/>
+        <span asp-validation-for="Input.Cpf" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Input.Telefone" class="form-label"></label>
+        <input asp-for="Input.Telefone" class="form-control"/>
+        <span asp-validation-for="Input.Telefone" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Input.Email" class="form-label">E-mail</label>
+        <input asp-for="Input.Email" class="form-control" type="email"/>
+        <span asp-validation-for="Input.Email" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Input.ConvenioId" class="form-label">Convênio</label>
+        <select asp-for="Input.ConvenioId" asp-items="Model.Convenios" class="form-select">
+            <option value="">Selecione...</option>
+        </select>
+        <span asp-validation-for="Input.ConvenioId" class="text-danger"></span>
+    </div>
+
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Salvar</button>
+        <a asp-page="Index" class="btn btn-outline-secondary">Cancelar</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"/>
+}

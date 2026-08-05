@@ -1,10 +1,72 @@
-﻿@page
+@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Início";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="text-center mb-4">
+    <h1 class="display-5">Clínica</h1>
+    <p class="text-muted">Visão geral do dia</p>
 </div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h2>@Model.TotalPacientes</h2>
+                <p class="text-muted mb-0">Pacientes ativos</p>
+                <a asp-page="/Pacientes/Index" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h2>@Model.TotalProfissionais</h2>
+                <p class="text-muted mb-0">Profissionais ativos</p>
+                <a asp-page="/Profissionais/Index" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h2>@Model.ConsultasHoje</h2>
+                <p class="text-muted mb-0">Consultas hoje</p>
+                <a asp-page="/Consultas/Index" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="h4 mb-0">Próximas consultas</h2>
+    <a asp-page="/Consultas/Create" class="btn btn-primary btn-sm">+ Nova consulta</a>
+</div>
+
+@if (!Model.ProximasConsultas.Any())
+{
+    <p class="text-muted">Nenhuma consulta agendada.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Data/Hora</th>
+            <th>Paciente</th>
+            <th>Profissional</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var consulta in Model.ProximasConsultas)
+        {
+            <tr>
+                <td>@consulta.DataHora.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@consulta.PacienteNome</td>
+                <td>@consulta.ProfissionalNome</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

@@ -1,6 +1,6 @@
 namespace WebApplication1.Api.Dtos.Medico;
 
-public class MedicoResponseDTO
+public record MedicoResponseDTO
 {
     public int Id { get; set; }
     public string Nome { get; set; }

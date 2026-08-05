@@ -1,0 +1,62 @@
+@page
+@model WebApplication1.Pages.Profissionais.CreateModel
+@{
+    ViewData["Title"] = "Novo profissional";
+}
+
+<h1>Novo profissional</h1>
+
+<div asp-validation-summary="All" class="text-danger"></div>
+
+<form method="post" class="row g-3" style="max-width: 640px;">
+    <div class="col-md-8">
+        <label asp-for="Input.Nome" class="form-label"></label>
+        <input asp-for="Input.Nome" class="form-control"/>
+        <span asp-validation-for="Input.Nome" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="Input.Telefone" class="form-label"></label>
+        <input asp-for="Input.Telefone" class="form-control"/>
+        <span asp-validation-for="Input.Telefone" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Input.TipoProfissionalId" class="form-label">Tipo</label>
+        <select asp-for="Input.TipoProfissionalId" asp-items="Model.Tipos" class="form-select" id="tipoProfissional"
+                data-dentista-id="@WebApplication1.Domain.Models.TipoProfissional.DentistaId">
+            <option value="">Selecione...</option>
+        </select>
+        <span asp-validation-for="Input.TipoProfissionalId" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6" id="campoCro">
+        <label asp-for="Input.Cro" class="form-label">CRO</label>
+        <input asp-for="Input.Cro" class="form-control"/>
+        <span asp-validation-for="Input.Cro" class="text-danger"></span>
+        <div class="form-text">Obrigatório para dentistas.</div>
+    </div>
+
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Salvar</button>
+        <a asp-page="Index" class="btn btn-outline-secondary">Cancelar</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"/>
+    <script>
+        (function () {
+            const select = document.getElementById('tipoProfissional');
+            const campoCro = document.getElementById('campoCro');
+            const dentistaId = select.dataset.dentistaId;
+
+            function atualizarVisibilidade() {
+                campoCro.style.display = select.value === dentistaId ? '' : 'none';
+            }
+
+            select.addEventListener('change', atualizarVisibilidade);
+            atualizarVisibilidade();
+        })();
+    </script>
+}

@@ -9,7 +9,7 @@ public class RegistroEvolucao
 {
     [Key]
     public UniqueId Id;
-    private Medico MedicoId { get;}
+    private Profissional ProfissionalId { get;}
     private Paciente PacienteId { get;}
 
     private string QueixaPrincipal { get; }
@@ -18,9 +18,9 @@ public class RegistroEvolucao
     private DateTime DataRegistro { get;  }
 
 
-    public RegistroEvolucao(Medico  medico, Paciente paciente, string diagnostico, string observacoes, string QueixaPrincipal, DateTime DataRegistro)
+    public RegistroEvolucao(Profissional  profissional, Paciente paciente, string diagnostico, string observacoes, string QueixaPrincipal, DateTime DataRegistro)
     {
-        this.MedicoId = medico;
+        this.ProfissionalId = profissional;
         this.PacienteId = paciente;
         this.QueixaPrincipal = QueixaPrincipal;
         this.Diagnostico = diagnostico;

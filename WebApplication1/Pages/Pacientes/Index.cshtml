@@ -1,0 +1,71 @@
+@page
+@model WebApplication1.Pages.Pacientes.IndexModel
+@{
+    ViewData["Title"] = "Pacientes";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Pacientes</h1>
+    <a asp-page="Create" class="btn btn-primary">+ Novo paciente</a>
+</div>
+
+@if (Model.Mensagem is not null)
+{
+    <div class="alert alert-success">@Model.Mensagem</div>
+}
+@if (Model.Erro is not null)
+{
+    <div class="alert alert-danger">@Model.Erro</div>
+}
+
+<input type="text" id="filtro" class="form-control mb-3" placeholder="Buscar por nome ou CPF..." />
+
+@if (!Model.Pacientes.Any())
+{
+    <p class="text-muted">Nenhum paciente cadastrado.</p>
+}
+else
+{
+    <table class="table table-striped align-middle" id="tabela-pacientes">
+        <thead>
+        <tr>
+            <th>Nome</th>
+            <th>CPF</th>
+            <th>Telefone</th>
+            <th>E-mail</th>
+            <th>Convênio</th>
+            <th class="text-end">Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var paciente in Model.Pacientes)
+        {
+            <tr>
+                <td>@paciente.Nome</td>
+                <td>@paciente.Cpf</td>
+                <td>@paciente.Telefone</td>
+                <td>@paciente.Email</td>
+                <td>@paciente.ConvenioNome</td>
+                <td class="text-end">
+                    <a asp-page="Edit" asp-route-id="@paciente.Id" class="btn btn-sm btn-outline-secondary">Editar</a>
+                    <form method="post" asp-page-handler="Desativar" asp-route-id="@paciente.Id" class="d-inline"
+                          onsubmit="return confirm('Desativar este paciente?');">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Desativar</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@section Scripts {
+    <script>
+        document.getElementById('filtro')?.addEventListener('input', function () {
+            const termo = this.value.toLowerCase();
+            document.querySelectorAll('#tabela-pacientes tbody tr').forEach(function (linha) {
+                linha.style.display = linha.textContent.toLowerCase().includes(termo) ? '' : 'none';
+            });
+        });
+    </script>
+}

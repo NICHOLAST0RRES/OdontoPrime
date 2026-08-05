@@ -1,0 +1,31 @@
+@page "{id:guid}"
+@model WebApplication1.Pages.Consultas.ReagendarModel
+@{
+    ViewData["Title"] = "Reagendar consulta";
+}
+
+<h1>Reagendar consulta</h1>
+
+<p>
+    <strong>Paciente:</strong> @Model.PacienteNome<br/>
+    <strong>Profissional:</strong> @Model.ProfissionalNome
+</p>
+
+<div asp-validation-summary="All" class="text-danger"></div>
+
+<form method="post" class="row g-3" style="max-width: 480px;">
+    <div class="col-12">
+        <label asp-for="NovaDataHora" class="form-label">Nova data e hora</label>
+        <input asp-for="NovaDataHora" type="datetime-local" class="form-control"/>
+        <span asp-validation-for="NovaDataHora" class="text-danger"></span>
+    </div>
+
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Reagendar</button>
+        <a asp-page="Index" class="btn btn-outline-secondary">Cancelar</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"/>
+}

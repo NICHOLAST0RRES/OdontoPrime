@@ -1,0 +1,69 @@
+@page
+@model WebApplication1.Pages.Profissionais.IndexModel
+@{
+    ViewData["Title"] = "Profissionais";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Profissionais</h1>
+    <a asp-page="Create" class="btn btn-primary">+ Novo profissional</a>
+</div>
+
+@if (Model.Mensagem is not null)
+{
+    <div class="alert alert-success">@Model.Mensagem</div>
+}
+@if (Model.Erro is not null)
+{
+    <div class="alert alert-danger">@Model.Erro</div>
+}
+
+<input type="text" id="filtro" class="form-control mb-3" placeholder="Buscar por nome..." />
+
+@if (!Model.Profissionais.Any())
+{
+    <p class="text-muted">Nenhum profissional cadastrado.</p>
+}
+else
+{
+    <table class="table table-striped align-middle" id="tabela-profissionais">
+        <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Tipo</th>
+            <th>CRO</th>
+            <th>Telefone</th>
+            <th class="text-end">Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var profissional in Model.Profissionais)
+        {
+            <tr>
+                <td>@profissional.Nome</td>
+                <td>@profissional.TipoProfissional</td>
+                <td>@(profissional.Cro ?? "-")</td>
+                <td>@profissional.Telefone</td>
+                <td class="text-end">
+                    <a asp-page="Edit" asp-route-id="@profissional.Id" class="btn btn-sm btn-outline-secondary">Editar</a>
+                    <form method="post" asp-page-handler="Desativar" asp-route-id="@profissional.Id" class="d-inline"
+                          onsubmit="return confirm('Desativar este profissional?');">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Desativar</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@section Scripts {
+    <script>
+        document.getElementById('filtro')?.addEventListener('input', function () {
+            const termo = this.value.toLowerCase();
+            document.querySelectorAll('#tabela-profissionais tbody tr').forEach(function (linha) {
+                linha.style.display = linha.textContent.toLowerCase().includes(termo) ? '' : 'none';
+            });
+        });
+    </script>
+}
