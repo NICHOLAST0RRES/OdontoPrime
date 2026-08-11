@@ -27,12 +27,19 @@ public class Paciente : IAuditavel , ISoftDelete
     {
         if (string.IsNullOrWhiteSpace(nome))
         {
-            throw new ArgumentException("Nome é obrigatório.", nameof(nome));
+            throw new ArgumentException("Nome é obrigatório.", nameof(nome)); // tecnica interessante 
         }
 
         if (string.IsNullOrWhiteSpace(cpf))
         {
             throw new ArgumentException("CPF é obrigatório.", nameof(cpf));
+        }
+
+        var cpfNormalizado = Models.Cpf.Normalizar(cpf);
+
+        if (!Models.Cpf.EhValido(cpfNormalizado))
+        {
+            throw new ArgumentException("CPF inválido.", nameof(cpf));
         }
 
         if (string.IsNullOrWhiteSpace(telefone))
@@ -42,7 +49,7 @@ public class Paciente : IAuditavel , ISoftDelete
 
         Id = Guid.CreateVersion7();
         Nome = nome;
-        Cpf = cpf;
+        Cpf = cpfNormalizado;
         Telefone = telefone;
         Email = email;
         ConvenioId = convenioId;
