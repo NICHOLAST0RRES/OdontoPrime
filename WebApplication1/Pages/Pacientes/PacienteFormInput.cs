@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using WebApplication1.Validation;
 
 namespace WebApplication1.Pages.Pacientes;
 
@@ -9,7 +10,8 @@ public class PacienteFormInput
     public string Nome { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Informe o CPF.")]
-    [StringLength(11, MinimumLength = 11, ErrorMessage = "CPF deve ter 11 dígitos, sem pontuação.")]
+    [StringLength(14, ErrorMessage = "CPF inválido.")]
+    [Cpf(ErrorMessage = "CPF inválido.")]
     public string Cpf { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Informe o telefone.")]
