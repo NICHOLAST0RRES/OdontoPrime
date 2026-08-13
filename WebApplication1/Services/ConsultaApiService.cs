@@ -1,5 +1,7 @@
 using System.Net.Http.Json;
 using WebApplication1.Api.Dtos.Consulta;
+using WebApplication1.Data;
+using WebApplication1.Infra.Mensageria;
 
 namespace WebApplication1.Services;
 
@@ -13,14 +15,21 @@ public interface IConsultaApiService
     Task<ApiResult> RealizarAsync(Guid id);
 }
 
+
 public class ConsultaApiService : IConsultaApiService
 {
     private readonly HttpClient _client;
+    private readonly AppDbContext _context;
+    private readonly IPublicadorDeEventos _publicador;
 
-    public ConsultaApiService(IHttpClientFactory httpClientFactory)
+    public ConsultaApiService(AppDbContext context,IPublicadorDeEventos publicador , IHttpClientFactory httpClientFactory)
     {
+        _context = context;
+        _publicador = publicador;
         _client = httpClientFactory.CreateClient("Api");
+
     }
+    
 
     public async Task<List<ConsultaResponseDTO>> ListarAsync()
     {
