@@ -27,7 +27,7 @@
 
     <div class="col-md-6">
         <label asp-for="Input.DataHora" class="form-label">Data e hora</label>
-        <input asp-for="Input.DataHora" type="datetime-local" class="form-control"/>
+        <input asp-for="Input.DataHora" type="text" id="DataHora" class="form-control"/>
         <span asp-validation-for="Input.DataHora" class="text-danger"></span>
     </div>
 
@@ -45,4 +45,15 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial"/>
+    
+    <script>
+    flatpickr("#DataHora", {
+        enableTime: true,
+        dateFormat: "d/m/Y H:i",
+        time_24hr: true,
+        minuteIncrement: 30,
+        minDate: "today",
+        locale: "pt"
+    });
+</script>
 }
