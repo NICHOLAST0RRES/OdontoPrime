@@ -1,0 +1,63 @@
+@page
+@model OdontoPrime.Pages.Consultas.CreateModel
+@{
+    ViewData["Title"] = "Nova consulta";
+}
+
+<div class="op-page-head">
+    <h1>Nova consulta</h1>
+</div>
+
+<div class="op-form-card">
+<div asp-validation-summary="All" class="text-danger"></div>
+
+<form method="post" class="row g-3">
+    <div class="col-md-6">
+        <label asp-for="Input.PacienteId" class="form-label">Paciente</label>
+        <select asp-for="Input.PacienteId" asp-items="Model.Pacientes" class="form-select">
+            <option value="">Selecione...</option>
+        </select>
+        <span asp-validation-for="Input.PacienteId" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Input.ProfissionalId" class="form-label">Dentista</label>
+        <select asp-for="Input.ProfissionalId" asp-items="Model.Dentistas" class="form-select">
+            <option value="">Selecione...</option>
+        </select>
+        <span asp-validation-for="Input.ProfissionalId" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Input.DataHora" class="form-label">Data e hora</label>
+        <input asp-for="Input.DataHora" type="text" id="DataHora" class="form-control"/>
+        <span asp-validation-for="Input.DataHora" class="text-danger"></span>
+    </div>
+
+    <div class="col-12">
+        <label asp-for="Input.Observacao" class="form-label">Observação</label>
+        <textarea asp-for="Input.Observacao" class="form-control" rows="3"></textarea>
+        <span asp-validation-for="Input.Observacao" class="text-danger"></span>
+    </div>
+
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Agendar</button>
+        <a asp-page="Index" class="btn btn-outline-secondary">Cancelar</a>
+    </div>
+</form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"/>
+    
+    <script>
+    flatpickr("#DataHora", {
+        enableTime: true,
+        dateFormat: "d/m/Y H:i",
+        time_24hr: true,
+        minuteIncrement: 30,
+        minDate: "today",
+        locale: "pt"
+    });
+</script>
+}
