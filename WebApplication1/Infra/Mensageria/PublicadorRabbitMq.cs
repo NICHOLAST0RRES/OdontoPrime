@@ -7,7 +7,12 @@ namespace WebApplication1.Infra.Mensageria;
 public class PublicadorRabbitMq  : IPublicadorDeEventos, IAsyncDisposable
 {
     
-    public const string NomeDaExchange = "clinica.consultas";
+    public const string NomeDaExchange = "clinica.eventos";
+    
+    private static readonly JsonSerializerOptions OpcoesJson = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+    };
 
     
     private readonly IConnection _conexao;
@@ -41,7 +46,7 @@ public class PublicadorRabbitMq  : IPublicadorDeEventos, IAsyncDisposable
     
     public async Task PublicarAsync<T>(T evento, string routingKey, CancellationToken cancellationToken = default)
     {
-        var json = JsonSerializer.Serialize(evento);
+        var json = JsonSerializer.Serialize(evento , OpcoesJson);
         var corpo = Encoding.UTF8.GetBytes(json);        
 
         var propriedades = new BasicProperties

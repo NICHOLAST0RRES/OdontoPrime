@@ -22,4 +22,8 @@
       <ProjectReference Include="..\Clinica.Contratos\Clinica.Contratos.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="assests\" />
+    </ItemGroup>
+
 </Project>
