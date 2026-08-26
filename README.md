@@ -328,7 +328,7 @@ Content-Type: application/json
 - [ ] Validação de conflito de horário na agenda do profissional
 - [ ] Paginação e filtros nas listagens
 - [ ] Containerização da aplicação (Dockerfile + compose com PostgreSQL)
-- [ ] Renomear o projeto de `WebApplication1` para um nome de domínio
+
 
 ---
 
