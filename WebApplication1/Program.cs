@@ -8,6 +8,7 @@ using WebApplication1.Application;
 using WebApplication1.Data;
 using WebApplication1.Data.Configurations;
 using WebApplication1.Infra.Interceptors;
+using WebApplication1.Infra.Jobs;
 using WebApplication1.Infra.Mensageria;
 using WebApplication1.Mappings;
 using WebApplication1.Services;
@@ -19,7 +20,6 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(cfg => { }, typeof(Program).Assembly);
@@ -31,6 +31,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")).AddInterceptors(
         new AuditoriaInterceptor(),
         new SoftDeleteInterceptor()));
+
+builder.Services.AddHostedService<LembreteScheduler>();
 
 builder.Services.AddSingleton<IPublicadorDeEventos>(sp =>
 {

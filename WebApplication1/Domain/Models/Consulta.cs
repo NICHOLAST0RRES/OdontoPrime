@@ -16,6 +16,7 @@ public class Consulta :  IAuditavel, ISoftDelete
     public StatusConsulta StatusConsulta { get; private set; } = null!;
     public DateTime DataHora { get; private set; }
     public string? Observacao { get; private set; }
+    public DateTime? LembreteEnviadoEm { get; private set; }
 
     public DateTime CriadoEm { get; private set; }
     public DateTime? AtualizadoEm { get; private set; }
@@ -55,6 +56,7 @@ public class Consulta :  IAuditavel, ISoftDelete
         }
 
         DataHora = novaDataHora;
+        LembreteEnviadoEm = null;
     }
 
     public void Cancelar()
@@ -75,6 +77,11 @@ public class Consulta :  IAuditavel, ISoftDelete
         }
 
         StatusConsultaId = StatusConsulta.RealizadaId;
+    }
+    
+    public void MarcarLembreteEnviado()
+    {
+        LembreteEnviadoEm = DateTime.UtcNow;
     }
 
     public void AtualizarObservacao(string? observacao)
