@@ -1,0 +1,80 @@
+@{
+    var currentPage = ViewContext.RouteData.Values["page"]?.ToString() ?? "";
+    string NavActive(string prefix) =>
+        currentPage.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) ? "active" : "";
+}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@ViewData["Title"] - OdontoPrime</title>
+    <link rel="icon" type="image/x-icon" href="~/favicon.ico" asp-append-version="true"/>
+    <link rel="icon" type="image/png" sizes="32x32" href="~/img/odontoprime-mark.png" asp-append-version="true"/>
+    <link rel="apple-touch-icon" href="~/img/odontoprime-mark.png" asp-append-version="true"/>
+    <script type="importmap"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/OdontoPrime.styles.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand-md op-navbar mb-4">
+        <div class="container">
+            <a class="op-brand" asp-area="" asp-page="/Index">
+                <span class="op-brand__chip">
+                    <img src="~/img/odontoprime-mark.png" alt="OdontoPrime"/>
+                </span>
+                <span>
+                    <span class="op-brand__name">Odonto<span>Prime</span></span>
+                    <span class="op-brand__sub">Clínica de Odontologia</span>
+                </span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                    aria-controls="mainNav" aria-expanded="false" aria-label="Alternar navegação">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="navbar-collapse collapse" id="mainNav">
+                <ul class="navbar-nav ms-auto align-items-md-center">
+                    <li class="nav-item">
+                        <a class="nav-link @(currentPage.Equals("/Index", StringComparison.OrdinalIgnoreCase) ? "active" : "")" asp-area="" asp-page="/Index">Início</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @NavActive("/Pacientes")" asp-area="" asp-page="/Pacientes/Index">Pacientes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @NavActive("/Profissionais")" asp-area="" asp-page="/Profissionais/Index">Profissionais</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @NavActive("/Consultas")" asp-area="" asp-page="/Consultas/Index">Consultas</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+<div class="container">
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
+</div>
+
+<footer class="border-top footer">
+    <div class="container">
+        &copy; 2026 OdontoPrime · Clínica de Odontologia — <a asp-area="" asp-page="/Privacy">Privacidade</a>
+    </div>
+</footer>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
+
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
