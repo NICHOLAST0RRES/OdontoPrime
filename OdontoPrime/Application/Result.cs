@@ -35,8 +35,7 @@ public class Result<T> : Result
     {
         Valor = valor;
     }
-
-    public static Result<T> Ok(T valor)                                     // entender isso depois
+    public static Result<T> Ok(T valor)                                     
     {
         return new Result<T>(true, valor, null, null);
     }
