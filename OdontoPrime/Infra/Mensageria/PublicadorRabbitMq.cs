@@ -1,10 +1,11 @@
 using System.Text;
 using System.Text.Json;
+using OdontoPrime.Infra.Mensageria.Outbox;
 using RabbitMQ.Client;
 
 namespace OdontoPrime.Infra.Mensageria;
 
-public class PublicadorRabbitMq  : IPublicadorDeEventos, IAsyncDisposable
+public class PublicadorRabbitMq  :  IAsyncDisposable
 {
     
     public const string NomeDaExchange = "clinica.eventos";
@@ -24,49 +25,49 @@ public class PublicadorRabbitMq  : IPublicadorDeEventos, IAsyncDisposable
         _canal = canal;
     }
     
-    public static async Task<PublicadorRabbitMq> CriarAsync(string connectionString)
+    public static async Task<PublicadorRabbitMq> CriarAsync(string connectionString, CancellationToken ct = default)
     {
-        var fabrica = new ConnectionFactory
-        {                                                                  // Como se trata de um publicador precisa abrir a conexão e criar a Exchange 
-            Uri = new Uri(connectionString)                                
-        };
+        var fabrica = new ConnectionFactory           // Como se trata de um publicador precisa abrir a conexão e criar a Exchange 
+        {
+            Uri = new Uri(connectionString),
+            AutomaticRecoveryEnabled = false // quem reconecta é o relay
+        }; 
 
-        var conexao = await fabrica.CreateConnectionAsync();
-        var canal = await conexao.CreateChannelAsync();
+        var conexao = await fabrica.CreateConnectionAsync(ct);
+        var canal = await conexao.CreateChannelAsync(cancellationToken: ct);
 
         await canal.ExchangeDeclareAsync(
             exchange: NomeDaExchange,
             type: ExchangeType.Topic,
             durable: true,
-            autoDelete: false
-        );
+            autoDelete: false,
+            cancellationToken: ct);
 
         return new PublicadorRabbitMq(conexao, canal);
     }
-    
-    public async Task PublicarAsync<T>(T evento, string routingKey, CancellationToken cancellationToken = default)
-    {
-        var json = JsonSerializer.Serialize(evento , OpcoesJson);
-        var corpo = Encoding.UTF8.GetBytes(json);        
 
+    public bool EstaAberto => _conexao.IsOpen && _canal.IsOpen;
+
+    public async Task PublicarAsync(OutboxMensagem mensagem, CancellationToken ct = default)
+    {
         var propriedades = new BasicProperties
-        {                                                      // Pega um objeto C# e coloca ele na exchange do RabbitMQ.
+        {
             Persistent = true,
             ContentType = "application/json",
-            MessageId = Guid.CreateVersion7().ToString()
+            MessageId = mensagem.Id.ToString(), // o mesmo em toda tentativa
+            Type = mensagem.Tipo
         };
 
         await _canal.BasicPublishAsync(
-            exchange: NomeDaExchange,
-            routingKey: routingKey,
-            mandatory: false,
+            exchange: NomeDaExchange,                    // Pega um objeto C# e coloca ele na exchange do RabbitMQ.
+
+            routingKey: mensagem.RoutingKey,              
+            mandatory: false, // vira true na Parte 2
             basicProperties: propriedades,
-            body: corpo,
-            cancellationToken: cancellationToken
-        );
+            body: Encoding.UTF8.GetBytes(mensagem.Payload),
+            cancellationToken: ct);
     }
-    
-    
+
     public async ValueTask DisposeAsync()
     {
         await _canal.CloseAsync();
@@ -75,3 +76,8 @@ public class PublicadorRabbitMq  : IPublicadorDeEventos, IAsyncDisposable
         await _conexao.DisposeAsync();
     }
 }
+
+
+
+
+

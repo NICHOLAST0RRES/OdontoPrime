@@ -10,6 +10,7 @@ using OdontoPrime.Data.Configurations;
 using OdontoPrime.Infra.Interceptors;
 using OdontoPrime.Infra.Jobs;
 using OdontoPrime.Infra.Mensageria;
+using OdontoPrime.Infra.Mensageria.Outbox;
 using OdontoPrime.Mappings;
 using OdontoPrime.Services;
 
@@ -23,8 +24,9 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(cfg => { }, typeof(Program).Assembly);
-
 builder.Services.AddScoped<ConsultaService>();
+builder.Services.AddScoped<IOutbox,OutboxEfCore>();
+builder.Services.AddHostedService<RelayDaOutbox>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     
@@ -34,12 +36,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddHostedService<LembreteScheduler>();
 
-builder.Services.AddSingleton<IPublicadorDeEventos>(sp =>
-{
-    var connectionString = builder.Configuration["RabbitMq:ConnectionString"]!;
-    return PublicadorRabbitMq.CriarAsync(connectionString).GetAwaiter().GetResult();
-});
-    
 
 
 // Add services to the container.
@@ -54,11 +50,11 @@ builder.Services.AddHttpClient("Api", (sp, client) =>
     client.BaseAddress = new Uri($"{httpContext.Request.Scheme}://{httpContext.Request.Host}");
 });
 
-builder.Services.AddScoped<IPacienteApiService, PacienteApiService>();
-builder.Services.AddScoped<IProfissionalApiService, ProfissionalApiService>();
-builder.Services.AddScoped<IConsultaApiService, ConsultaApiService>();
-builder.Services.AddScoped<IConvenioApiService, ConvenioApiService>();
-builder.Services.AddScoped<ITipoProfissionalApiService, TipoProfissionalApiService>();
+builder.Services.AddScoped<IPacienteApiService, PacienteApiClient>();
+builder.Services.AddScoped<IProfissionalApiService, ProfissionalApiClient>();
+builder.Services.AddScoped<IConsultaApiService, ConsultaApiClient>();
+builder.Services.AddScoped<IConvenioApiService, ConvenioApiClient>();
+builder.Services.AddScoped<ITipoProfissionalApiService, TipoProfissionalApiClient>();
 
 var app = builder.Build();
 

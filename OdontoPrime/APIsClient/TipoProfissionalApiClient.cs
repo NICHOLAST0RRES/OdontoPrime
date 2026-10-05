@@ -8,11 +8,11 @@ public interface ITipoProfissionalApiService
     Task<List<TipoProfissionalResponseDTO>> ListarAsync();
 }
 
-public class TipoProfissionalApiService : ITipoProfissionalApiService
+public class TipoProfissionalApiClient : ITipoProfissionalApiService
 {
     private readonly HttpClient _client;
 
-    public TipoProfissionalApiService(IHttpClientFactory httpClientFactory)
+    public TipoProfissionalApiClient(IHttpClientFactory httpClientFactory)
     {
         _client = httpClientFactory.CreateClient("Api");
     }

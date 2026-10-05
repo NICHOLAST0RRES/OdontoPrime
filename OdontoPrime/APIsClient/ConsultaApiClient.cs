@@ -16,21 +16,16 @@ public interface IConsultaApiService
 }
 
 
-public class ConsultaApiService : IConsultaApiService
+public class ConsultaApiClient : IConsultaApiService
 {
     private readonly HttpClient _client;
     private readonly AppDbContext _context;
-    private readonly IPublicadorDeEventos _publicador;
 
-    public ConsultaApiService(AppDbContext context,IPublicadorDeEventos publicador , IHttpClientFactory httpClientFactory)
+    public ConsultaApiClient(IHttpClientFactory httpClientFactory)
     {
-        _context = context;
-        _publicador = publicador;
         _client = httpClientFactory.CreateClient("Api");
 
     }
-    
-
     public async Task<List<ConsultaResponseDTO>> ListarAsync()
     {
         return await _client.GetFromJsonAsync<List<ConsultaResponseDTO>>("Consulta") ?? [];

@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using OdontoPrime.Domain;
 using OdontoPrime.Domain.Models;
+using OdontoPrime.Infra.Mensageria.Outbox;
 
 namespace OdontoPrime.Data;
 
@@ -36,6 +37,7 @@ public class AppDbContext : DbContext
     
     public DbSet<Convenio> Convenios => Set<Convenio>();
     
+    public DbSet<OutboxMensagem> OutboxMensagens => Set<OutboxMensagem>();
     public DbSet<Profissional> Profissionais { get; set; }
     public DbSet<TipoProfissional> TipoProfissionais { get; set; }
     
