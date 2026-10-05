@@ -1,5 +1,6 @@
 using Clinica.Contratos;
 using Microsoft.EntityFrameworkCore;
+using OdontoPrime.Application;
 using OdontoPrime.Data;
 using OdontoPrime.Domain.Models;
 using OdontoPrime.Infra.Mensageria;
@@ -8,17 +9,12 @@ namespace OdontoPrime.Infra.Jobs;
 
 public class LembreteScheduler  : BackgroundService
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly IPublicadorDeEventos _publicador;
+   private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<LembreteScheduler> _logger;
 
-    public LembreteScheduler(
-        IServiceProvider serviceProvider,
-        IPublicadorDeEventos publicador,
-        ILogger<LembreteScheduler> logger)
+    public LembreteScheduler(IServiceProvider serviceProvider, ILogger<LembreteScheduler> logger)
     {
         _serviceProvider = serviceProvider;
-        _publicador = publicador;
         _logger = logger;
     }
 
@@ -28,22 +24,24 @@ public class LembreteScheduler  : BackgroundService
         {
             try
             {
-                await PublicarLembretesAsync(stoppingToken);
+                await GerarLembretesAsync(stoppingToken);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Falha ao publicar lembretes");
+                _logger.LogError(ex, "Falha ao gerar lembretes");
             }
 
             await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
         }
     }
 
-    private async Task PublicarLembretesAsync(CancellationToken ct)
+    private async Task GerarLembretesAsync(CancellationToken ct)
     {
         using var scope = _serviceProvider.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var outbox = scope.ServiceProvider.GetRequiredService<IOutbox>(); // mesmo escopo = mesmo DbContext
 
+        // A janela em UTC continua errada; corrige nas Partes 4 e 5.
         var inicio = DateTime.UtcNow.Date.AddDays(1);
         var fim = inicio.AddDays(1);
 
@@ -57,23 +55,22 @@ public class LembreteScheduler  : BackgroundService
 
         foreach (var consulta in consultas)
         {
-            var evento = new LembreteDeConsulta(
+            outbox.Adicionar(new LembreteDeConsulta(
                 consulta.Id,
                 consulta.Paciente.Nome,
                 consulta.Paciente.Telefone,
                 consulta.Profissional.Nome,
                 consulta.DataHora
-            );
+            ), RoutingKeys.LembreteDeConsulta);
 
-            await _publicador.PublicarAsync(evento, RoutingKeys.LembreteDeConsulta, ct);
             consulta.MarcarLembreteEnviado();
         }
-        
-        await context.SaveChangesAsync(ct);
+
+        await context.SaveChangesAsync(ct); // marcações + mensagens: tudo ou nada
 
         if (consultas.Count > 0)
         {
-            _logger.LogInformation("{Total} lembretes publicados", consultas.Count);
+            _logger.LogInformation("{Total} lembretes gerados", consultas.Count);
         }
     }
     

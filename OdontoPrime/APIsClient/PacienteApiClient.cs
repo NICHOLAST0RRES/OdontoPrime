@@ -13,11 +13,11 @@ public interface IPacienteApiService
     Task<ApiResult> ReativarAsync(Guid id);
 }
 
-public class PacienteApiService : IPacienteApiService
+public class PacienteApiClient : IPacienteApiService
 {
     private readonly HttpClient _client;
 
-    public PacienteApiService(IHttpClientFactory httpClientFactory)
+    public PacienteApiClient(IHttpClientFactory httpClientFactory)
     {
         _client = httpClientFactory.CreateClient("Api");
     }

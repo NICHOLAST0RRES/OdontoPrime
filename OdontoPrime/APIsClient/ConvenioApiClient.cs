@@ -8,11 +8,11 @@ public interface IConvenioApiService
     Task<List<ConvenioResponseDTO>> ListarAsync();
 }
 
-public class ConvenioApiService : IConvenioApiService
+public class ConvenioApiClient : IConvenioApiService
 {
     private readonly HttpClient _client;
 
-    public ConvenioApiService(IHttpClientFactory httpClientFactory)
+    public ConvenioApiClient(IHttpClientFactory httpClientFactory)
     {
         _client = httpClientFactory.CreateClient("Api");
     }

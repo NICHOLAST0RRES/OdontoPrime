@@ -13,11 +13,11 @@ public interface IProfissionalApiService
     Task<ApiResult> ReativarAsync(Guid id);
 }
 
-public class ProfissionalApiService : IProfissionalApiService
+public class ProfissionalApiClient : IProfissionalApiService
 {
     private readonly HttpClient _client;
 
-    public ProfissionalApiService(IHttpClientFactory httpClientFactory)
+    public ProfissionalApiClient(IHttpClientFactory httpClientFactory)
     {
         _client = httpClientFactory.CreateClient("Api");
     }

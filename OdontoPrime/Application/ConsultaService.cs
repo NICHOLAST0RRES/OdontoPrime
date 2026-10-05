@@ -8,13 +8,14 @@ namespace OdontoPrime.Application;
 
 public class ConsultaService
 {
-     private readonly AppDbContext _context;
-    private readonly IPublicadorDeEventos _publicador;
-
-    public ConsultaService(AppDbContext context, IPublicadorDeEventos publicador)
+    private readonly IOutbox _outbox;
+    private readonly AppDbContext _context;
+    public ConsultaService(AppDbContext context,  IOutbox outbox)
     {
+        
         _context = context;
-        _publicador = publicador;
+        _outbox = outbox;
+
     }
 
     public async Task<Result<Consulta>> AgendarAsync(
@@ -54,19 +55,17 @@ public class ConsultaService
         try
         {
             var consulta = new Consulta(pacienteId, profissionalId, dataHora, observacao);
-
             _context.Consultas.Add(consulta);
-            await _context.SaveChangesAsync();
 
-            var evento = new ConsultaAgendada(
+            _outbox.Adicionar(new ConsultaAgendada(
                 consulta.Id,
                 paciente.Nome,
                 paciente.Telefone,
                 profissional.Nome,
                 consulta.DataHora
-            );
+            ), RoutingKeys.ConsultaAgendada);
 
-            await _publicador.PublicarAsync(evento, RoutingKeys.ConsultaAgendada);
+            await _context.SaveChangesAsync(); // consulta + evento na mesma transação
 
             return Result<Consulta>.Ok(consulta);
         }
@@ -74,8 +73,10 @@ public class ConsultaService
         {
             return Result<Consulta>.Falha(ex.Message, TipoError.Invalido);
         }
+        
     }
 
+    
     private Task<bool> HorarioOcupadoAsync(Guid profissionalId, DateTime dataHora, Guid? ignorarId)
     {
         return _context.Consultas
@@ -101,19 +102,19 @@ public class ConsultaService
         try
         {
             consulta.Cancelar();
-            await _context.SaveChangesAsync();
 
-            var evento = new ConsultaCancelada(
+            _outbox.Adicionar(new ConsultaCancelada(
                 consulta.Id,
                 consulta.Paciente.Nome,
                 consulta.Paciente.Telefone,
                 consulta.DataHora
-            );
+            ), RoutingKeys.ConsultaCancelada);
 
-            await _publicador.PublicarAsync(evento, RoutingKeys.ConsultaCancelada);
+            await _context.SaveChangesAsync();
 
             return Result.Ok();
         }
+        
         catch (InvalidOperationException ex)
         {
             return Result.Falha(ex.Message, TipoError.Invalido);
@@ -142,18 +143,17 @@ public class ConsultaService
         try
         {
             consulta.Reagendar(novaDataHora);
-            await _context.SaveChangesAsync();
 
-            var evento = new ConsultaReagendada(
+            _outbox.Adicionar(new ConsultaReagendada(
                 consulta.Id,
                 consulta.Paciente.Nome,
                 consulta.Paciente.Telefone,
                 consulta.Profissional.Nome,
                 dataHoraAnterior,
                 consulta.DataHora
-            );
+            ), RoutingKeys.ConsultaReagendada);
 
-            await _publicador.PublicarAsync(evento, RoutingKeys.ConsultaReagendada);
+            await _context.SaveChangesAsync();
 
             return Result.Ok();
         }
