@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OdontoPrime.Api.Dtos.Consulta;
+using OdontoPrime.Application;
 using OdontoPrime.Services;
 
 namespace OdontoPrime.Pages.Consultas;
@@ -11,15 +12,18 @@ public class CreateModel : PageModel
     private readonly IConsultaApiService _consultaApiService;
     private readonly IPacienteApiService _pacienteApiService;
     private readonly IProfissionalApiService _profissionalApiService;
+    private readonly RelogioDaClinica _relogio;
 
     public CreateModel(
         IConsultaApiService consultaApiService,
         IPacienteApiService pacienteApiService,
-        IProfissionalApiService profissionalApiService)
+        IProfissionalApiService profissionalApiService,
+        RelogioDaClinica relogio)
     {
         _consultaApiService = consultaApiService;
         _pacienteApiService = pacienteApiService;
         _profissionalApiService = profissionalApiService;
+        _relogio = relogio;
     }
 
     [BindProperty]
@@ -30,6 +34,10 @@ public class CreateModel : PageModel
 
     public async Task OnGetAsync()
     {
+        // Sugere "agora" no horário da clínica, sem segundos, como antes.
+        var agora = _relogio.AgoraNaClinica();
+        Input.DataHora = agora.AddSeconds(-agora.Second).AddMilliseconds(-agora.Millisecond);
+
         await CarregarListasAsync();
     }
 

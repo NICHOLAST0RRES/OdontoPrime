@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using OdontoPrime.Application;
 using OdontoPrime.Data;
 
 namespace OdontoPrime.Infra.Mensageria.Outbox;
@@ -11,15 +12,18 @@ public class RelayDaOutbox : BackgroundService
     private readonly IConfiguration _configuration;
     private readonly ILogger<RelayDaOutbox> _logger;
     private PublicadorRabbitMq? _publicador;
+    private RelogioDaClinica _relogio;
 
     public RelayDaOutbox(
         IServiceScopeFactory scopeFactory,
         IConfiguration configuration,
-        ILogger<RelayDaOutbox> logger)
+        ILogger<RelayDaOutbox> logger,
+        RelogioDaClinica relogioDaClinica)
     {
         _scopeFactory = scopeFactory;
         _configuration = configuration;
         _logger = logger;
+        _relogio = relogioDaClinica;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -65,7 +69,7 @@ public class RelayDaOutbox : BackgroundService
             try
             {
                 await publicador.PublicarAsync(mensagem, ct);
-                mensagem.MarcarComoPublicada();
+                mensagem.MarcarComoPublicada(_relogio.AgoraUtc());
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {

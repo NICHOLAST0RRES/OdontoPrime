@@ -10,14 +10,19 @@ namespace OdontoPrime.Infra.Jobs;
 public class LembreteScheduler  : BackgroundService
 {
    private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger<LembreteScheduler> _logger;
+   private readonly ILogger<LembreteScheduler> _logger;
+   private  readonly RelogioDaClinica _relogioDaClinica;
 
-    public LembreteScheduler(IServiceProvider serviceProvider, ILogger<LembreteScheduler> logger)
+    public LembreteScheduler(IServiceProvider serviceProvider, ILogger<LembreteScheduler> logger, RelogioDaClinica relogioDaClinica)
     {
         _serviceProvider = serviceProvider;
         _logger = logger;
+        _relogioDaClinica = relogioDaClinica;
     }
 
+    
+
+    
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         while (!stoppingToken.IsCancellationRequested)
@@ -41,9 +46,9 @@ public class LembreteScheduler  : BackgroundService
         var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var outbox = scope.ServiceProvider.GetRequiredService<IOutbox>(); // mesmo escopo = mesmo DbContext
 
-        // A janela em UTC continua errada; corrige nas Partes 4 e 5.
-        var inicio = DateTime.UtcNow.Date.AddDays(1);
-        var fim = inicio.AddDays(1);
+        var amanhaNaClinica = _relogioDaClinica.HojeNaClinica().AddDays(1);
+        var inicio = _relogioDaClinica.ParaUtc(amanhaNaClinica);
+        var fim = _relogioDaClinica.ParaUtc(amanhaNaClinica.AddDays(1));
 
         var consultas = await context.Consultas
             .Include(c => c.Paciente)
@@ -52,6 +57,8 @@ public class LembreteScheduler  : BackgroundService
             .Where(c => c.LembreteEnviadoEm == null)
             .Where(c => c.DataHora >= inicio && c.DataHora < fim)
             .ToListAsync(ct);
+
+        var agora = _relogioDaClinica.AgoraUtc();
 
         foreach (var consulta in consultas)
         {
@@ -63,7 +70,7 @@ public class LembreteScheduler  : BackgroundService
                 consulta.DataHora
             ), RoutingKeys.LembreteDeConsulta);
 
-            consulta.MarcarLembreteEnviado();
+            consulta.MarcarLembreteEnviado(agora);
         }
 
         await context.SaveChangesAsync(ct); // marcações + mensagens: tudo ou nada
@@ -73,5 +80,7 @@ public class LembreteScheduler  : BackgroundService
             _logger.LogInformation("{Total} lembretes gerados", consultas.Count);
         }
     }
+    
+    
     
 }

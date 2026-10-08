@@ -1,5 +1,6 @@
 @page
 @model OdontoPrime.Pages.Consultas.IndexModel
+@inject OdontoPrime.Application.RelogioDaClinica Relogio
 @{
     ViewData["Title"] = "Consultas";
 }
@@ -49,7 +50,7 @@ else
                 _ => "bg-light text-dark"
             };
             <tr>
-                <td>@consulta.DataHora.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@Relogio.ParaHorarioDaClinica(consulta.DataHora).ToString("dd/MM/yyyy HH:mm")</td>
                 <td>@consulta.PacienteNome</td>
                 <td>@consulta.ProfissionalNome</td>
                 <td><span class="badge @badge">@consulta.Status</span></td>

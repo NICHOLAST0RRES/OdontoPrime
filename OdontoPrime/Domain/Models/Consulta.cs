@@ -27,9 +27,9 @@ public class Consulta :  IAuditavel, ISoftDelete
     {
     }
 
-    public Consulta(Guid pacienteId, Guid profissionalId, DateTime dataHora, string? observacao)
+    public Consulta(Guid pacienteId, Guid profissionalId, DateTime dataHora, string? observacao , DateTime agoraUtc)
     {
-        if (dataHora <= DateTime.UtcNow)
+           if (dataHora <= agoraUtc)
         {
             throw new ArgumentException("Consulta não pode ser marcada no passado.", nameof(dataHora));
         }
@@ -43,14 +43,14 @@ public class Consulta :  IAuditavel, ISoftDelete
         Ativo = true;
     }
 
-    public void Reagendar(DateTime novaDataHora)
+    public void Reagendar(DateTime novaDataHora , DateTime agoraUtc)
     {
         if (StatusConsultaId != StatusConsulta.AgendadaId)
         {
             throw new InvalidOperationException("Só consulta agendada pode ser reagendada.");
         }
 
-        if (novaDataHora <= DateTime.UtcNow)
+        if (novaDataHora <= agoraUtc)
         {
             throw new ArgumentException("Consulta não pode ser marcada no passado.", nameof(novaDataHora));
         }
@@ -79,9 +79,9 @@ public class Consulta :  IAuditavel, ISoftDelete
         StatusConsultaId = StatusConsulta.RealizadaId;
     }
     
-    public void MarcarLembreteEnviado()
+    public void MarcarLembreteEnviado(DateTime agoraUtc)
     {
-        LembreteEnviadoEm = DateTime.UtcNow;
+        LembreteEnviadoEm = agoraUtc;
     }
 
     public void AtualizarObservacao(string? observacao)

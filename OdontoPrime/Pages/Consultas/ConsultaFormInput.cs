@@ -12,9 +12,9 @@ public class ConsultaFormInput
 
     [Required(ErrorMessage = "Informe a data e hora.")]
     [DataType(DataType.DateTime)]
-    public DateTime DataHora { get; set;} = DateTime.Now.AddSeconds(-DateTime.Now.Second)
-        .AddMilliseconds(-DateTime.Now.Millisecond);
+    public DateTime DataHora { get; set; }
     
     [StringLength(500)]
     public string? Observacao { get; set; }
+    
 }
