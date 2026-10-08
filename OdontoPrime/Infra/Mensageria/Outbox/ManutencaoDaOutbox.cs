@@ -1,3 +1,5 @@
+using OdontoPrime.Application;
+
 namespace OdontoPrime.Infra.Mensageria.Outbox;
 using Microsoft.EntityFrameworkCore;
 using OdontoPrime.Data;
@@ -11,6 +13,7 @@ public class ManutencaoDaOutbox : BackgroundService
 
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<ManutencaoDaOutbox> _logger;
+    private readonly RelogioDaClinica _relogio; 
 
     public ManutencaoDaOutbox(IServiceScopeFactory scopeFactory, ILogger<ManutencaoDaOutbox> logger)
     {
@@ -49,7 +52,7 @@ public class ManutencaoDaOutbox : BackgroundService
 
         if (maisAntiga is null) return;
 
-        var atraso = DateTime.UtcNow - maisAntiga.Value;
+        var atraso = _relogio.AgoraUtc() - maisAntiga.Value;
         if (atraso > AtrasoAceitavel)
         {
             _logger.LogWarning(
@@ -60,7 +63,7 @@ public class ManutencaoDaOutbox : BackgroundService
 
     private async Task ApagarPublicadasAntigasAsync(AppDbContext context, CancellationToken ct)
     {
-        var limite = DateTime.UtcNow - Retencao;
+        var limite = _relogio.AgoraUtc() - Retencao;
 
         var apagadas = await context.OutboxMensagens
             .Where(m => m.PublicadoEm != null && m.PublicadoEm < limite)
