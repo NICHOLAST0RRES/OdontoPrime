@@ -45,7 +45,7 @@ public class IndexModel : PageModel
             c.Status == "Agendada" && _relogioDaClinica.ParaHorarioDaClinica(c.DataHora).Date == hoje);
 
         ProximasConsultas = consultas
-            .Where(c => c.Status == "Agendada" && c.DataHora >= DateTime.UtcNow)
+            .Where(c => c.Status == "Agendada" && c.DataHora >= _relogioDaClinica.AgoraUtc())
             .OrderBy(c => c.DataHora)
             .Take(5)
             .ToList();

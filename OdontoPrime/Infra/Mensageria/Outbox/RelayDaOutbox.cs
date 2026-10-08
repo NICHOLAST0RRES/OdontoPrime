@@ -12,18 +12,18 @@ public class RelayDaOutbox : BackgroundService
     private readonly IConfiguration _configuration;
     private readonly ILogger<RelayDaOutbox> _logger;
     private PublicadorRabbitMq? _publicador;
-    private RelogioDaClinica _relogio;
-
+    private readonly TimeProvider _tempo;
     public RelayDaOutbox(
         IServiceScopeFactory scopeFactory,
         IConfiguration configuration,
         ILogger<RelayDaOutbox> logger,
-        RelogioDaClinica relogioDaClinica)
+        TimeProvider tempo)
     {
         _scopeFactory = scopeFactory;
         _configuration = configuration;
         _logger = logger;
-        _relogio = relogioDaClinica;
+        _tempo = tempo;
+        
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -69,7 +69,7 @@ public class RelayDaOutbox : BackgroundService
             try
             {
                 await publicador.PublicarAsync(mensagem, ct);
-                mensagem.MarcarComoPublicada(_relogio.AgoraUtc());
+                mensagem.MarcarComoPublicada(_tempo.GetUtcNow().UtcDateTime);
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {

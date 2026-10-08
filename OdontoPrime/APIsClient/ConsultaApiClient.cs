@@ -69,15 +69,7 @@ public class ConsultaApiClient : IConsultaApiService
 
         return ApiResult.Ok();
     }
-
-    // O input datetime-local do navegador chega sem fuso (Kind=Unspecified); o Postgres exige UTC
-    // para colunas timestamptz, então tratamos esse valor como horário local do servidor e convertemos.
-    private static DateTime ParaUtc(DateTime dataHora) => dataHora.Kind switch
-    {
-        DateTimeKind.Utc => dataHora,
-        DateTimeKind.Local => dataHora.ToUniversalTime(),
-        _ => DateTime.SpecifyKind(dataHora, DateTimeKind.Local).ToUniversalTime()
-    };
+    
 
     public async Task<ApiResult> CancelarAsync(Guid id)
     {
