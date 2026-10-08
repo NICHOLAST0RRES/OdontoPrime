@@ -27,6 +27,9 @@ builder.Services.AddAutoMapper(cfg => { }, typeof(Program).Assembly);
 builder.Services.AddScoped<ConsultaService>();
 builder.Services.AddScoped<IOutbox,OutboxEfCore>();
 builder.Services.AddHostedService<RelayDaOutbox>();
+builder.Services.AddHostedService<ManutencaoDaOutbox>();
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton<RelogioDaClinica>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     

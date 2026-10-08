@@ -15,7 +15,7 @@ public class OutboxMensagem
 
     private OutboxMensagem() { } // EF
 
-    public static OutboxMensagem Criar(object evento, string routingKey)
+    public static OutboxMensagem Criar(object evento, string routingKey , DateTime agoraUtc)
     {
         var tipo = evento.GetType();
 
@@ -25,11 +25,11 @@ public class OutboxMensagem
             Tipo = tipo.Name,
             RoutingKey = routingKey,
             Payload = JsonSerializer.Serialize(evento, tipo, OpcoesJsonMensageria.Padrao),
-            CriadoEm = DateTime.UtcNow
+            CriadoEm = agoraUtc
         };
     }
 
-    public void MarcarComoPublicada() => PublicadoEm = DateTime.UtcNow;
+    public void MarcarComoPublicada(DateTime agoraUtc) => PublicadoEm = agoraUtc;
 
     public void RegistrarFalha(string erro)
     {

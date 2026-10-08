@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using OdontoPrime.Application;
 using OdontoPrime.Services;
 
 namespace OdontoPrime.Pages.Consultas;
@@ -8,10 +9,12 @@ namespace OdontoPrime.Pages.Consultas;
 public class ReagendarModel : PageModel
 {
     private readonly IConsultaApiService _consultaApiService;
+    private readonly RelogioDaClinica _relogio;
 
-    public ReagendarModel(IConsultaApiService consultaApiService)
+    public ReagendarModel(IConsultaApiService consultaApiService , RelogioDaClinica relogio)
     {
         _consultaApiService = consultaApiService;
+        _relogio = relogio;
     }
 
     [BindProperty(SupportsGet = true)]
@@ -35,8 +38,7 @@ public class ReagendarModel : PageModel
 
         PacienteNome = consulta.PacienteNome;
         ProfissionalNome = consulta.ProfissionalNome;
-        NovaDataHora = consulta.DataHora.ToLocalTime();
-
+        NovaDataHora = _relogio.ParaHorarioDaClinica(consulta.DataHora);
         return Page();
     }
 

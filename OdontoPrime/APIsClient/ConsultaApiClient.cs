@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using OdontoPrime.Api.Dtos.Consulta;
+using OdontoPrime.Application;
 using OdontoPrime.Data;
 using OdontoPrime.Infra.Mensageria;
 
@@ -19,11 +20,13 @@ public interface IConsultaApiService
 public class ConsultaApiClient : IConsultaApiService
 {
     private readonly HttpClient _client;
+    private readonly RelogioDaClinica _relogio; 
     private readonly AppDbContext _context;
 
-    public ConsultaApiClient(IHttpClientFactory httpClientFactory)
+    public ConsultaApiClient(IHttpClientFactory httpClientFactory , RelogioDaClinica relogio)
     {
         _client = httpClientFactory.CreateClient("Api");
+        _relogio = relogio; 
 
     }
     public async Task<List<ConsultaResponseDTO>> ListarAsync()
@@ -44,7 +47,7 @@ public class ConsultaApiClient : IConsultaApiService
 
     public async Task<ApiResult<ConsultaResponseDTO>> CriarAsync(ConsultaRequestDTO dto)
     {
-        dto = dto with { DataHora = ParaUtc(dto.DataHora) };
+        dto = dto with { DataHora = _relogio.ParaUtc(dto.DataHora) };
 
         var response = await _client.PostAsJsonAsync("Consulta", dto);
         if (!response.IsSuccessStatusCode)
@@ -58,7 +61,7 @@ public class ConsultaApiClient : IConsultaApiService
 
     public async Task<ApiResult> ReagendarAsync(Guid id, DateTime novaDataHora)
     {
-        var response = await _client.PutAsJsonAsync($"Consulta/{id}/reagendar", ParaUtc(novaDataHora));
+        var response = await _client.PutAsJsonAsync($"Consulta/{id}/reagendar", _relogio.ParaUtc(novaDataHora));
         if (!response.IsSuccessStatusCode)
         {
             return ApiResult.Fail(await ApiErrorHelper.ExtractErrorMessageAsync(response));

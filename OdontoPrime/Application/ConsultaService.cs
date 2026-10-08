@@ -10,11 +10,13 @@ public class ConsultaService
 {
     private readonly IOutbox _outbox;
     private readonly AppDbContext _context;
-    public ConsultaService(AppDbContext context,  IOutbox outbox)
+    private readonly RelogioDaClinica _relogio; 
+    public ConsultaService(AppDbContext context,  IOutbox outbox, RelogioDaClinica relogioDaClinica)
     {
         
         _context = context;
         _outbox = outbox;
+        _relogio = relogioDaClinica;
 
     }
 
@@ -54,7 +56,7 @@ public class ConsultaService
 
         try
         {
-            var consulta = new Consulta(pacienteId, profissionalId, dataHora, observacao);
+            var consulta = new Consulta(pacienteId, profissionalId, dataHora, observacao, _relogio.AgoraUtc());
             _context.Consultas.Add(consulta);
 
             _outbox.Adicionar(new ConsultaAgendada(
@@ -142,7 +144,7 @@ public class ConsultaService
 
         try
         {
-            consulta.Reagendar(novaDataHora);
+            consulta.Reagendar(novaDataHora , _relogio.AgoraUtc());
 
             _outbox.Adicionar(new ConsultaReagendada(
                 consulta.Id,
