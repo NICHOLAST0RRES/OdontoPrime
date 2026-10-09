@@ -10,14 +10,16 @@ namespace Clinica.Contratos;
         string PacienteNome,
         string PacienteTelefone,
         string ProfissionalNome,
-        DateTime DataHora
+        DateTimeOffset DataHora,
+        DateTimeOffset OcorridoEm
     );
 
     public record ConsultaCancelada(
         Guid ConsultaId,
         string PacienteNome,
         string PacienteTelefone,
-        DateTime DataHoraOriginal
+        DateTimeOffset DataHoraOriginal,
+        DateTimeOffset OcorridoEm
     );
 
     public record ConsultaReagendada(
@@ -25,8 +27,9 @@ namespace Clinica.Contratos;
         string PacienteNome,
         string PacienteTelefone,
         string ProfissionalNome,
-        DateTime DataHoraAnterior,
-        DateTime DataHoraNova
+        DateTimeOffset DataHoraAnterior,
+        DateTimeOffset DataHoraNova,
+        DateTimeOffset OcorridoEm
     );
 
     public record LembreteDeConsulta(
@@ -34,6 +37,7 @@ namespace Clinica.Contratos;
         string PacienteNome,
         string PacienteTelefone,
         string ProfissionalNome,
-        DateTime DataHora
+        DateTimeOffset DataHora,
+        DateTimeOffset OcorridoEm
     );
     

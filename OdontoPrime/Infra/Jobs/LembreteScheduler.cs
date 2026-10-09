@@ -12,6 +12,9 @@ public class LembreteScheduler  : BackgroundService
    private readonly IServiceProvider _serviceProvider;
    private readonly ILogger<LembreteScheduler> _logger;
    private  readonly RelogioDaClinica _relogioDaClinica;
+   private DateTimeOffset NaClinica(DateTime utc) => _relogioDaClinica.ParaOffsetDaClinica(utc);
+
+   
 
     public LembreteScheduler(IServiceProvider serviceProvider, ILogger<LembreteScheduler> logger, RelogioDaClinica relogioDaClinica)
     {
@@ -67,7 +70,8 @@ public class LembreteScheduler  : BackgroundService
                 consulta.Paciente.Nome,
                 consulta.Paciente.Telefone,
                 consulta.Profissional.Nome,
-                consulta.DataHora
+                NaClinica(consulta.DataHora),
+                NaClinica(agora)
             ), RoutingKeys.LembreteDeConsulta);
 
             consulta.MarcarLembreteEnviado(agora);
