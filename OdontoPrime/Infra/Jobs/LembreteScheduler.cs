@@ -49,19 +49,18 @@ public class LembreteScheduler  : BackgroundService
         var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var outbox = scope.ServiceProvider.GetRequiredService<IOutbox>(); // mesmo escopo = mesmo DbContext
 
-        var amanhaNaClinica = _relogioDaClinica.HojeNaClinica().AddDays(1);
-        var inicio = _relogioDaClinica.ParaUtc(amanhaNaClinica);
-        var fim = _relogioDaClinica.ParaUtc(amanhaNaClinica.AddDays(1));
+        var agora = _relogioDaClinica.AgoraUtc();
 
         var consultas = await context.Consultas
             .Include(c => c.Paciente)
             .Include(c => c.Profissional)
             .Where(c => c.StatusConsultaId == StatusConsulta.AgendadaId)
             .Where(c => c.LembreteEnviadoEm == null)
-            .Where(c => c.DataHora >= inicio && c.DataHora < fim)
+            .Where(c => c.LembrarEm != null && c.LembrarEm <= agora)
+            .Where(c => c.DataHora > agora)
+            .OrderBy(c => c.LembrarEm)
+            .Take(100)
             .ToListAsync(ct);
-
-        var agora = _relogioDaClinica.AgoraUtc();
 
         foreach (var consulta in consultas)
         {
@@ -77,7 +76,7 @@ public class LembreteScheduler  : BackgroundService
             consulta.MarcarLembreteEnviado(agora);
         }
 
-        await context.SaveChangesAsync(ct); // marcações + mensagens: tudo ou nada
+        await context.SaveChangesAsync(ct);
 
         if (consultas.Count > 0)
         {
