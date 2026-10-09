@@ -28,6 +28,7 @@ builder.Services.AddScoped<ConsultaService>();
 builder.Services.AddScoped<IOutbox,OutboxEfCore>();    // "quem pedir IOutbox, recebe OutboxEfCore"
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<RelogioDaClinica>();
+builder.Services.AddSingleton<PoliticaDeLembrete>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     

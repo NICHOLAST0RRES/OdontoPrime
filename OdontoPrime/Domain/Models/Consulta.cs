@@ -22,14 +22,16 @@ public class Consulta :  IAuditavel, ISoftDelete
     public DateTime? AtualizadoEm { get; private set; }
     public bool Ativo { get; private set; }
     public DateTime? DeletadoEm { get; private set; }
+    public DateTime? LembrarEm { get; private set; }
 
     private Consulta()
     {
     }
 
-    public Consulta(Guid pacienteId, Guid profissionalId, DateTime dataHora, string? observacao , DateTime agoraUtc)
+    public Consulta(Guid pacienteId, Guid profissionalId, DateTime dataHora, string? observacao,
+        DateTime agoraUtc, DateTime? lembrarEm)
     {
-           if (dataHora <= agoraUtc)
+        if (dataHora <= agoraUtc)
         {
             throw new ArgumentException("Consulta não pode ser marcada no passado.", nameof(dataHora));
         }
@@ -41,9 +43,10 @@ public class Consulta :  IAuditavel, ISoftDelete
         Observacao = observacao;
         StatusConsultaId = StatusConsulta.AgendadaId;
         Ativo = true;
+        LembrarEm = lembrarEm;
     }
 
-    public void Reagendar(DateTime novaDataHora , DateTime agoraUtc)
+    public void Reagendar(DateTime novaDataHora , DateTime agoraUtc , DateTime? lembrarEm )
     {
         if (StatusConsultaId != StatusConsulta.AgendadaId)
         {
@@ -56,6 +59,7 @@ public class Consulta :  IAuditavel, ISoftDelete
         }
 
         DataHora = novaDataHora;
+        LembrarEm = lembrarEm;
         LembreteEnviadoEm = null;
     }
 
@@ -67,6 +71,7 @@ public class Consulta :  IAuditavel, ISoftDelete
         }
 
         StatusConsultaId = StatusConsulta.CanceladaId;
+        LembrarEm = null;
     }
 
     public void MarcarComoRealizada()
@@ -77,6 +82,7 @@ public class Consulta :  IAuditavel, ISoftDelete
         }
 
         StatusConsultaId = StatusConsulta.RealizadaId;
+        LembrarEm = null;
     }
     
     public void MarcarLembreteEnviado(DateTime agoraUtc)

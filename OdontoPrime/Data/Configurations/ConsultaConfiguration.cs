@@ -39,6 +39,10 @@ public class ConsultaConfiguration : IEntityTypeConfiguration<Consulta>
         builder.HasIndex(c => new { c.ProfissionalId, c.DataHora });
 
         builder.HasQueryFilter(c => c.Ativo);
+        
+        builder.HasIndex(c => c.LembrarEm)
+            .HasFilter("\"LembreteEnviadoEm\" IS NULL AND \"LembrarEm\" IS NOT NULL")
+            .HasDatabaseName("IX_Consultas_LembretesPendentes");
     }
     
 }

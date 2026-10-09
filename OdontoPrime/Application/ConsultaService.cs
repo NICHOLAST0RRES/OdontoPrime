@@ -11,13 +11,17 @@ public class ConsultaService
     private readonly IOutbox _outbox;
     private readonly AppDbContext _context;
     private readonly RelogioDaClinica _relogio; 
+    private readonly PoliticaDeLembrete _politicaDeLembrete;
+
+    
     private DateTimeOffset NaClinica(DateTime utc) => _relogio.ParaOffsetDaClinica(utc);
-    public ConsultaService(AppDbContext context,  IOutbox outbox, RelogioDaClinica relogioDaClinica)
+    public ConsultaService(AppDbContext context,  IOutbox outbox, RelogioDaClinica relogioDaClinica , PoliticaDeLembrete politica)
     {
         
         _context = context;
         _outbox = outbox;
         _relogio = relogioDaClinica;
+        _politicaDeLembrete = politica;
 
     }
 
@@ -57,10 +61,12 @@ public class ConsultaService
 
         try
         {
-            var consulta = new Consulta(pacienteId, profissionalId, dataHora, observacao, _relogio.AgoraUtc());
-            _context.Consultas.Add(consulta);
-
             var agora = _relogio.AgoraUtc();
+            var lembrarEm = _politicaDeLembrete.CalcularLembrarEm(dataHora, agora);
+            
+            var consulta = new Consulta(pacienteId, profissionalId, dataHora, observacao, agora, lembrarEm);
+            
+            _context.Consultas.Add(consulta);
             
             _outbox.Adicionar(new ConsultaAgendada(
                 consulta.Id,
@@ -151,9 +157,11 @@ public class ConsultaService
 
         try
         {
-            consulta.Reagendar(novaDataHora , _relogio.AgoraUtc());
-
             var agora = _relogio.AgoraUtc();
+            var lembrarEm = _politicaDeLembrete.CalcularLembrarEm(novaDataHora, agora);
+            
+            consulta.Reagendar(novaDataHora , agora , lembrarEm);
+
             _outbox.Adicionar(new ConsultaReagendada(
                 consulta.Id,
                 consulta.Paciente.Nome,
