@@ -147,7 +147,7 @@ public class ConsultaService
             return Result.Falha("Profissional já tem consulta nesse horário.", TipoError.Conflito);
         }
 
-        var dataHoraAnterior = consulta.DataHora;
+        var dataHoraAnterior = NaClinica(consulta.DataHora);
 
         try
         {
