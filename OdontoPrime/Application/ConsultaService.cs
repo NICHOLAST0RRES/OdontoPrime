@@ -160,7 +160,7 @@ public class ConsultaService
             var agora = _relogio.AgoraUtc();
             var lembrarEm = _politicaDeLembrete.CalcularLembrarEm(novaDataHora, agora);
             
-            consulta.Reagendar(novaDataHora , _relogio.AgoraUtc() , lembrarEm);
+            consulta.Reagendar(novaDataHora , agora , lembrarEm);
 
             _outbox.Adicionar(new ConsultaReagendada(
                 consulta.Id,
