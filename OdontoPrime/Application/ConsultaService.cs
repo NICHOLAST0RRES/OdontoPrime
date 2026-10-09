@@ -11,6 +11,7 @@ public class ConsultaService
     private readonly IOutbox _outbox;
     private readonly AppDbContext _context;
     private readonly RelogioDaClinica _relogio; 
+    private DateTimeOffset NaClinica(DateTime utc) => _relogio.ParaOffsetDaClinica(utc);
     public ConsultaService(AppDbContext context,  IOutbox outbox, RelogioDaClinica relogioDaClinica)
     {
         
@@ -59,12 +60,15 @@ public class ConsultaService
             var consulta = new Consulta(pacienteId, profissionalId, dataHora, observacao, _relogio.AgoraUtc());
             _context.Consultas.Add(consulta);
 
+            var agora = _relogio.AgoraUtc();
+            
             _outbox.Adicionar(new ConsultaAgendada(
                 consulta.Id,
                 paciente.Nome,
                 paciente.Telefone,
                 profissional.Nome,
-                consulta.DataHora
+                NaClinica(consulta.DataHora),
+                NaClinica(agora)
             ), RoutingKeys.ConsultaAgendada);
 
             await _context.SaveChangesAsync(); // consulta + evento na mesma transação
@@ -105,11 +109,14 @@ public class ConsultaService
         {
             consulta.Cancelar();
 
+            var agora = _relogio.AgoraUtc();
+
             _outbox.Adicionar(new ConsultaCancelada(
                 consulta.Id,
                 consulta.Paciente.Nome,
                 consulta.Paciente.Telefone,
-                consulta.DataHora
+                NaClinica(consulta.DataHora),
+                NaClinica(agora)
             ), RoutingKeys.ConsultaCancelada);
 
             await _context.SaveChangesAsync();
@@ -146,13 +153,15 @@ public class ConsultaService
         {
             consulta.Reagendar(novaDataHora , _relogio.AgoraUtc());
 
+            var agora = _relogio.AgoraUtc();
             _outbox.Adicionar(new ConsultaReagendada(
                 consulta.Id,
                 consulta.Paciente.Nome,
                 consulta.Paciente.Telefone,
                 consulta.Profissional.Nome,
                 dataHoraAnterior,
-                consulta.DataHora
+                NaClinica(consulta.DataHora),
+                NaClinica(agora)
             ), RoutingKeys.ConsultaReagendada);
 
             await _context.SaveChangesAsync();
