@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OdontoPrime", "OdontoPrime\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clinica.Contratos", "Clinica.Contratos\Clinica.Contratos.csproj", "{AABFEB42-12BB-4E61-8BE6-6F7CDB539B0D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OdontoPrime.Tests", "OdontoPrime.Tests\OdontoPrime.Tests.csproj", "{A35C45FA-5A95-4CBB-BB08-DBC361456EFC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,6 +40,18 @@ Global
 		{AABFEB42-12BB-4E61-8BE6-6F7CDB539B0D}.Release|x64.Build.0 = Release|Any CPU
 		{AABFEB42-12BB-4E61-8BE6-6F7CDB539B0D}.Release|x86.ActiveCfg = Release|Any CPU
 		{AABFEB42-12BB-4E61-8BE6-6F7CDB539B0D}.Release|x86.Build.0 = Release|Any CPU
+		{A35C45FA-5A95-4CBB-BB08-DBC361456EFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A35C45FA-5A95-4CBB-BB08-DBC361456EFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A35C45FA-5A95-4CBB-BB08-DBC361456EFC}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A35C45FA-5A95-4CBB-BB08-DBC361456EFC}.Debug|x64.Build.0 = Debug|Any CPU
+		{A35C45FA-5A95-4CBB-BB08-DBC361456EFC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A35C45FA-5A95-4CBB-BB08-DBC361456EFC}.Debug|x86.Build.0 = Debug|Any CPU
+		{A35C45FA-5A95-4CBB-BB08-DBC361456EFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A35C45FA-5A95-4CBB-BB08-DBC361456EFC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A35C45FA-5A95-4CBB-BB08-DBC361456EFC}.Release|x64.ActiveCfg = Release|Any CPU
+		{A35C45FA-5A95-4CBB-BB08-DBC361456EFC}.Release|x64.Build.0 = Release|Any CPU
+		{A35C45FA-5A95-4CBB-BB08-DBC361456EFC}.Release|x86.ActiveCfg = Release|Any CPU
+		{A35C45FA-5A95-4CBB-BB08-DBC361456EFC}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
