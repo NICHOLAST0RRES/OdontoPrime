@@ -15,10 +15,11 @@ public class ManutencaoDaOutbox : BackgroundService
     private readonly ILogger<ManutencaoDaOutbox> _logger;
     private readonly RelogioDaClinica _relogio; 
 
-    public ManutencaoDaOutbox(IServiceScopeFactory scopeFactory, ILogger<ManutencaoDaOutbox> logger)
+    public ManutencaoDaOutbox(IServiceScopeFactory scopeFactory, ILogger<ManutencaoDaOutbox> logger , RelogioDaClinica relogio)
     {
         _scopeFactory = scopeFactory;
         _logger = logger;
+        _relogio = relogio;
     }
 
     
