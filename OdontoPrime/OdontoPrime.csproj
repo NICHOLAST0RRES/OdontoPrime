@@ -22,10 +22,9 @@
     <ItemGroup>
       <ProjectReference Include="..\Clinica.Contratos\Clinica.Contratos.csproj" />
     </ItemGroup>
-
+    
     <ItemGroup>
-      <_ContentIncludedByDefault Remove="OdontoPrime.Tests\obj\OdontoPrime.Tests.csproj.nuget.dgspec.json" />
-      <_ContentIncludedByDefault Remove="OdontoPrime.Tests\obj\project.assets.json" />
+        <InternalsVisibleTo Include="OdontoPrime.Tests" />
     </ItemGroup>
 
 </Project>
