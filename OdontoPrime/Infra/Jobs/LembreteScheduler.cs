@@ -43,7 +43,7 @@ public class LembreteScheduler  : BackgroundService
         }
     }
 
-    private async Task GerarLembretesAsync(CancellationToken ct)
+    internal async Task GerarLembretesAsync(CancellationToken ct)
     {
         using var scope = _serviceProvider.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();

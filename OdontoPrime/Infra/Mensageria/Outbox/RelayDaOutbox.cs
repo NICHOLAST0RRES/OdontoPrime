@@ -43,7 +43,7 @@ public class RelayDaOutbox : BackgroundService
         }
     }
 
-    private async Task PublicarPendentesAsync(CancellationToken ct)
+    internal async Task PublicarPendentesAsync(CancellationToken ct)
     {
         var publicador = await ObterPublicadorAsync(ct);
         if (publicador is null) return; // RabbitMQ fora: tenta no próximo ciclo

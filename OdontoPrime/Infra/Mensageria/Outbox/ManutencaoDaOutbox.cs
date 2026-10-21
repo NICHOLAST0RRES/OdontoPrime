@@ -21,6 +21,8 @@ public class ManutencaoDaOutbox : BackgroundService
         _logger = logger;
     }
 
+    
+    
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         using var timer = new PeriodicTimer(Intervalo);
@@ -29,11 +31,7 @@ public class ManutencaoDaOutbox : BackgroundService
         {
             try
             {
-                using var scope = _scopeFactory.CreateScope();
-                var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-                await AvisarSeHouverAtrasoAsync(context, stoppingToken);
-                await ApagarPublicadasAntigasAsync(context, stoppingToken);
+                await ExecutarCicloAsync(stoppingToken);
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
@@ -41,6 +39,17 @@ public class ManutencaoDaOutbox : BackgroundService
             }
         }
     }
+
+// Um ciclo completo. Interno para o teste poder chamar sem esperar o timer.
+    internal async Task ExecutarCicloAsync(CancellationToken ct)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+        await AvisarSeHouverAtrasoAsync(context, ct);
+        await ApagarPublicadasAntigasAsync(context, ct);
+    }
+    
 
     private async Task AvisarSeHouverAtrasoAsync(AppDbContext context, CancellationToken ct)
     {
