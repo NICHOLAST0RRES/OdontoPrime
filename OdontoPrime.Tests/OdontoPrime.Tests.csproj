@@ -29,6 +29,13 @@
   <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>
-  
+
+  <ItemGroup>
+    <None Update="Contratos\*.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Contratos\" />
+  </ItemGroup>
   
 </Project>
