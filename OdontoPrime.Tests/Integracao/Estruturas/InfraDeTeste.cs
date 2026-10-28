@@ -9,14 +9,11 @@ namespace OdontoPrime.Tests;
 
 public class InfraDeTeste : IAsyncLifetime
 {
-    private readonly PostgreSqlContainer _postgres = new PostgreSqlBuilder()
-        .WithImage("postgres:17-alpine")
-        .Build();
+    private readonly PostgreSqlContainer _postgres = new PostgreSqlBuilder("postgres:17-alpine").Build();
 
-    private readonly RabbitMqContainer _rabbitMq = new RabbitMqBuilder()
-        .WithImage("rabbitmq:4-alpine")
-        .Build();
-
+    private readonly RabbitMqContainer _rabbitMq = new RabbitMqBuilder("rabbitmq:4-alpine").Build();
+    
+    
     public RelogioDeTeste Relogio { get; } = new();
     public AppDeTeste App { get; private set; } = null!;
     public string RabbitMqConnectionString => _rabbitMq.GetConnectionString();
