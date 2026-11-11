@@ -1,16 +1,18 @@
+using Microsoft.Extensions.Options;
+
 namespace OdontoPrime.Application;
 
 public class RelogioDaClinica
 {
     private readonly TimeProvider _tempo;
 
+
     public TimeZoneInfo Fuso { get; }
 
-    public RelogioDaClinica(TimeProvider tempo, IConfiguration configuration)
+    public RelogioDaClinica(TimeProvider tempo, IOptions<OpcoesDaClinica> opcoes)
     {
         _tempo = tempo;
-        Fuso = TimeZoneInfo.FindSystemTimeZoneById(
-            configuration["Clinica:FusoHorario"] ?? "America/Bahia");
+        Fuso = TimeZoneInfo.FindSystemTimeZoneById(opcoes.Value.FusoHorario);
     }
 
     // O instante atual, em UTC. É o que se grava no banco e se usa em comparações.

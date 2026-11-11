@@ -27,6 +27,7 @@ builder.Services.AddAutoMapper(cfg => { }, typeof(Program).Assembly);
 builder.Services.AddScoped<ConsultaService>();
 builder.Services.AddScoped<IOutbox,OutboxEfCore>();    // "quem pedir IOutbox, recebe OutboxEfCore"
 builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.Configure<OpcoesDaClinica>(builder.Configuration.GetSection(OpcoesDaClinica.Secao));
 builder.Services.AddSingleton<RelogioDaClinica>();
 builder.Services.AddSingleton<PoliticaDeLembrete>();
 
@@ -35,6 +36,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")).AddInterceptors(
         new AuditoriaInterceptor(),
         new SoftDeleteInterceptor()));
+
+builder.Services.AddScoped<IClinicaDbContext>(sp => sp.GetRequiredService<AppDbContext>());
 
 // background services
 builder.Services.AddHostedService<LembreteScheduler>();

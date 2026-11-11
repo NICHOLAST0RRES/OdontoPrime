@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using OdontoPrime.Application;
 using Xunit;
 
@@ -11,16 +12,14 @@ public class PoliticaDeLembreteTests
 
     public PoliticaDeLembreteTests()
     {
-        var configuracao = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["Clinica:FusoHorario"] = "America/Bahia",
-                ["Clinica:HoraDoLembrete"] = "18"
-            })
-            .Build();
+        var opcoes = Options.Create(new OpcoesDaClinica
+        {
+            FusoHorario = "America/Bahia",
+            HoraDoLembrete = 18
+        });
 
-        var relogio = new RelogioDaClinica(TimeProvider.System, configuracao);
-        _politica = new PoliticaDeLembrete(relogio, configuracao);
+        var relogio = new RelogioDaClinica(TimeProvider.System, opcoes);
+        _politica = new PoliticaDeLembrete(relogio, opcoes);
     }
 
     // Um horário de Salvador convertido para UTC, do jeito que fica gravado no banco.

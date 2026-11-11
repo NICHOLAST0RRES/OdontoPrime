@@ -17,7 +17,6 @@ public class Consulta :  IAuditavel, ISoftDelete
     public DateTime DataHora { get; private set; }
     public string? Observacao { get; private set; }
     public DateTime? LembreteEnviadoEm { get; private set; }
-
     public DateTime CriadoEm { get; private set; }
     public DateTime? AtualizadoEm { get; private set; }
     public bool Ativo { get; private set; }
@@ -27,7 +26,7 @@ public class Consulta :  IAuditavel, ISoftDelete
     private Consulta()
     {
     }
-
+    
     public Consulta(Guid pacienteId, Guid profissionalId, DateTime dataHora, string? observacao,
         DateTime agoraUtc, DateTime? lembrarEm)
     {
@@ -95,6 +94,6 @@ public class Consulta :  IAuditavel, ISoftDelete
         Observacao = observacao;
     }
 
- 
+    
 }
 

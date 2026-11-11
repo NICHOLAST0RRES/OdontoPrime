@@ -1,5 +1,4 @@
-namespace OdontoPrime.Infra.Mensageria;
-
+namespace OdontoPrime.Application;
 public static class RoutingKeys
 {
         public const string ConsultaAgendada = "consulta.agendada";

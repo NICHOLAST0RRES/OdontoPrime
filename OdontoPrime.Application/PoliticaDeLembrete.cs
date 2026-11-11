@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Options;
+
 namespace OdontoPrime.Application;
 
 public class PoliticaDeLembrete
@@ -5,10 +7,10 @@ public class PoliticaDeLembrete
     private readonly RelogioDaClinica _relogio;
     private readonly TimeSpan _horario;
 
-    public PoliticaDeLembrete(RelogioDaClinica relogio, IConfiguration configuration)
+    public PoliticaDeLembrete(RelogioDaClinica relogio, IOptions<OpcoesDaClinica> opcoes)
     {
         _relogio = relogio;
-        _horario = TimeSpan.FromHours(configuration.GetValue("Clinica:HoraDoLembrete", 18));
+        _horario = TimeSpan.FromHours(opcoes.Value.HoraDoLembrete);
     }
 
     // Devolve o instante (UTC) em que o lembrete deve sair, ou null se não faz mais sentido lembrar.

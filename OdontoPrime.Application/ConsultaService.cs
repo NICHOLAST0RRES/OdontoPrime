@@ -1,28 +1,24 @@
 using Clinica.Contratos;
 using Microsoft.EntityFrameworkCore;
-using OdontoPrime.Data;
 using OdontoPrime.Domain.Models;
-using OdontoPrime.Infra.Mensageria;
 
 namespace OdontoPrime.Application;
 
 public class ConsultaService
 {
     private readonly IOutbox _outbox;
-    private readonly AppDbContext _context;
-    private readonly RelogioDaClinica _relogio; 
+    private readonly IClinicaDbContext _context;
+    private readonly RelogioDaClinica _relogio;
     private readonly PoliticaDeLembrete _politicaDeLembrete;
 
-    
     private DateTimeOffset NaClinica(DateTime utc) => _relogio.ParaOffsetDaClinica(utc);
-    public ConsultaService(AppDbContext context,  IOutbox outbox, RelogioDaClinica relogioDaClinica , PoliticaDeLembrete politica)
+
+    public ConsultaService(IClinicaDbContext context, IOutbox outbox, RelogioDaClinica relogioDaClinica, PoliticaDeLembrete politica)
     {
-        
         _context = context;
         _outbox = outbox;
         _relogio = relogioDaClinica;
         _politicaDeLembrete = politica;
-
     }
 
     public async Task<Result<Consulta>> AgendarAsync(
