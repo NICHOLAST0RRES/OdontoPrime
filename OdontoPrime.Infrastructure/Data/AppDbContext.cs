@@ -1,12 +1,13 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using OdontoPrime.Application;
 using OdontoPrime.Domain;
 using OdontoPrime.Domain.Models;
 using OdontoPrime.Infra.Mensageria.Outbox;
 
 namespace OdontoPrime.Data;
 
-public class AppDbContext : DbContext
+public class AppDbContext : DbContext , IClinicaDbContext
 {
     //ctor
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
