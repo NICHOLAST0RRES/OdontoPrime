@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using OdontoPrime.Infra.Jobs;
 using OdontoPrime.Infra.Mensageria.Outbox;
+using Microsoft.EntityFrameworkCore;
+using OdontoPrime.Data;
 
 namespace OdontoPrime.Tests;
 
@@ -24,6 +26,11 @@ public class AppDeTeste(string postgres, string rabbitMq, RelogioDeTeste relogio
 
         builder.ConfigureTestServices(services =>
         {
+            // Portão das gravações: desarmado por padrão, só o teste da corrida arma.
+            services.AddSingleton<PortaoDeGravacao>();
+            services.ConfigureDbContext<AppDbContext>((sp, opcoes) => opcoes.AddInterceptors(sp.GetRequiredService<PortaoDeGravacao>()));
+            
+            
             services.RemoveAll<TimeProvider>();
             services.AddSingleton<TimeProvider>(relogio);
 
