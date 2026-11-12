@@ -25,7 +25,10 @@ public class ConsultaService
         Guid pacienteId,
         Guid profissionalId,
         DateTime dataHora,
+        int tipoAtendimentoId,
+        int? duracaoMinutos,
         string? observacao)
+    
     {
         var paciente = await _context.Pacientes
             .AsNoTracking()
@@ -49,6 +52,15 @@ public class ConsultaService
         {
             return Result<Consulta>.Falha("Consulta só pode ser marcada com dentista.", TipoError.Invalido);
         }
+        
+        var tipo = await _context.TiposAtendimento
+            .AsNoTracking()
+            .FirstOrDefaultAsync(t => t.Id == tipoAtendimentoId);
+
+        if (tipo is null)
+        {
+            return Result<Consulta>.Falha("Tipo de atendimento não encontrado.", TipoError.Invalido);
+        }
 
         if (await HorarioOcupadoAsync(profissionalId, dataHora, null))
         {
@@ -60,7 +72,7 @@ public class ConsultaService
             var agora = _relogio.AgoraUtc();
             var lembrarEm = _politicaDeLembrete.CalcularLembrarEm(dataHora, agora);
             
-            var consulta = new Consulta(pacienteId, profissionalId, dataHora, observacao, agora, lembrarEm);
+            var consulta = new Consulta(pacienteId, profissionalId, tipo, duracaoMinutos, dataHora, observacao, agora, lembrarEm);
             
             _context.Consultas.Add(consulta);
             

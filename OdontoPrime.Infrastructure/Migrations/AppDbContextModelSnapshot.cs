@@ -45,6 +45,9 @@ namespace OdontoPrime.Migrations
                     b.Property<DateTime?>("DeletadoEm")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTime>("Fim")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTime?>("LembrarEm")
                         .HasColumnType("timestamp with time zone");
 
@@ -64,6 +67,9 @@ namespace OdontoPrime.Migrations
                     b.Property<int>("StatusConsultaId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("TipoAtendimentoId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("LembrarEm")
@@ -73,6 +79,8 @@ namespace OdontoPrime.Migrations
                     b.HasIndex("PacienteId");
 
                     b.HasIndex("StatusConsultaId");
+
+                    b.HasIndex("TipoAtendimentoId");
 
                     b.HasIndex("ProfissionalId", "DataHora");
 
@@ -226,6 +234,64 @@ namespace OdontoPrime.Migrations
                         });
                 });
 
+            modelBuilder.Entity("OdontoPrime.Domain.Models.TipoAtendimento", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("DuracaoMaximaMinutos")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("DuracaoPadraoMinutos")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TiposAtendimento", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            DuracaoMaximaMinutos = 60,
+                            DuracaoPadraoMinutos = 30,
+                            Nome = "Avaliação"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            DuracaoMaximaMinutos = 90,
+                            DuracaoPadraoMinutos = 45,
+                            Nome = "Limpeza"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            DuracaoMaximaMinutos = 120,
+                            DuracaoPadraoMinutos = 60,
+                            Nome = "Restauração"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            DuracaoMaximaMinutos = 180,
+                            DuracaoPadraoMinutos = 90,
+                            Nome = "Canal"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            DuracaoMaximaMinutos = 60,
+                            DuracaoPadraoMinutos = 30,
+                            Nome = "Urgência"
+                        });
+                });
+
             modelBuilder.Entity("OdontoPrime.Domain.Models.TipoProfissional", b =>
                 {
                     b.Property<int>("Id")
@@ -314,11 +380,19 @@ namespace OdontoPrime.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("OdontoPrime.Domain.Models.TipoAtendimento", "TipoAtendimento")
+                        .WithMany()
+                        .HasForeignKey("TipoAtendimentoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Paciente");
 
                     b.Navigation("Profissional");
 
                     b.Navigation("StatusConsulta");
+
+                    b.Navigation("TipoAtendimento");
                 });
 
             modelBuilder.Entity("OdontoPrime.Domain.Models.Paciente", b =>

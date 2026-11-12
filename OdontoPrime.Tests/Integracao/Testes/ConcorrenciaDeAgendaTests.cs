@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using OdontoPrime.Application;
 using OdontoPrime.Data;
+using OdontoPrime.Domain.Models;
 using Xunit;
 
 namespace OdontoPrime.Tests;
@@ -50,9 +51,10 @@ namespace OdontoPrime.Tests;
         {
             using var escopo = NovoEscopo();
             var servico = escopo.ServiceProvider.GetRequiredService<ConsultaService>();
-            return await servico.AgendarAsync(pacienteId, dentistaId, horarioUtc, observacao: null);
+            return await servico.AgendarAsync(pacienteId, dentistaId, horarioUtc,
+                TipoAtendimento.AvaliacaoId, duracaoMinutos: null, observacao: null);
         }
-
+        
         private async Task<int> ConsultasDoDentistaAsync(Guid dentistaId)
         {
             using var escopo = NovoEscopo();
