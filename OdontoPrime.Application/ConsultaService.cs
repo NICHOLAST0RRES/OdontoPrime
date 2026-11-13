@@ -244,6 +244,7 @@ public class ConsultaService
             .Include(c => c.Paciente)
             .Include(c => c.Profissional)
             .Include(c => c.StatusConsulta)
+            .Include(c => c.TipoAtendimento)
             .AsNoTracking();
     }
     

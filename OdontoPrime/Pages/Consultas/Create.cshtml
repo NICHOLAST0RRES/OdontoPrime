@@ -34,6 +34,25 @@
         <span asp-validation-for="Input.DataHora" class="text-danger"></span>
     </div>
 
+    <div class="col-md-6">
+        <label asp-for="Input.TipoAtendimentoId" class="form-label">Tipo de atendimento</label>
+        <select asp-for="Input.TipoAtendimentoId" id="TipoAtendimento" class="form-select">
+            <option value="">Selecione...</option>
+            @foreach (var tipo in Model.TiposAtendimento)
+            {
+                <option value="@tipo.Id" data-padrao="@tipo.DuracaoPadraoMinutos" data-maxima="@tipo.DuracaoMaximaMinutos">@tipo.Nome</option>
+            }
+        </select>
+        <span asp-validation-for="Input.TipoAtendimentoId" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Input.DuracaoMinutos" class="form-label">Duração (minutos)</label>
+        <input asp-for="Input.DuracaoMinutos" id="Duracao" type="number" step="15" min="15" class="form-control"/>
+        <div id="DuracaoAjuda" class="form-text">Escolha o tipo de atendimento para ver a duração sugerida.</div>
+        <span asp-validation-for="Input.DuracaoMinutos" class="text-danger"></span>
+    </div>
+
     <div class="col-12">
         <label asp-for="Input.Observacao" class="form-label">Observação</label>
         <textarea asp-for="Input.Observacao" class="form-control" rows="3"></textarea>
@@ -55,9 +74,32 @@
         enableTime: true,
         dateFormat: "d/m/Y H:i",
         time_24hr: true,
-        minuteIncrement: 30,
+        minuteIncrement: 15,
         minDate: "today",
         locale: "pt"
     });
+
+    // O tipo de atendimento sugere a duração e define o máximo do campo.
+    const tipo = document.getElementById("TipoAtendimento");
+    const duracao = document.getElementById("Duracao");
+    const ajuda = document.getElementById("DuracaoAjuda");
+
+    function aplicarTipo(sugerir) {
+        const opcao = tipo.selectedOptions[0];
+        if (!opcao || !opcao.dataset.padrao) {
+            duracao.removeAttribute("max");
+            return;
+        }
+
+        const padrao = opcao.dataset.padrao;
+        const maxima = opcao.dataset.maxima;
+
+        duracao.max = maxima;
+        if (sugerir || !duracao.value) duracao.value = padrao;
+        ajuda.textContent = `Sugerido: ${padrao} min. Máximo: ${maxima} min, em passos de 15.`;
+    }
+
+    tipo.addEventListener("change", () => aplicarTipo(true));
+    aplicarTipo(false);
 </script>
 }

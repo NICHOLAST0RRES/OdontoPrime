@@ -11,6 +11,7 @@ public class ConsultaProfile  : Profile
         CreateMap<Consulta, ConsultaResponseDTO>()
             .ForMember(d => d.PacienteNome, o => o.MapFrom(s => s.Paciente.Nome))
             .ForMember(d => d.ProfissionalNome, o => o.MapFrom(s => s.Profissional.Nome))
-            .ForMember(d => d.Status, o => o.MapFrom(s => s.StatusConsulta.Nome));
+            .ForMember(d => d.Status, o => o.MapFrom(s => s.StatusConsulta.Nome))
+            .ForMember(d => d.TipoAtendimento, o => o.MapFrom(s => s.TipoAtendimento.Nome));
     }
 }
