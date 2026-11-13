@@ -43,6 +43,14 @@ public class ConsultaConfiguration : IEntityTypeConfiguration<Consulta>
         builder.HasIndex(c => c.LembrarEm)
             .HasFilter("\"LembreteEnviadoEm\" IS NULL AND \"LembrarEm\" IS NOT NULL")
             .HasDatabaseName("IX_Consultas_LembretesPendentes");
+        
+        builder.Property(c => c.Fim).IsRequired();
+        builder.Ignore(c => c.Duracao);
+
+        builder.HasOne(c => c.TipoAtendimento)
+            .WithMany()
+            .HasForeignKey(c => c.TipoAtendimentoId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
     
 }

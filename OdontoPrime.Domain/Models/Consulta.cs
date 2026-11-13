@@ -22,23 +22,32 @@ public class Consulta :  IAuditavel, ISoftDelete
     public bool Ativo { get; private set; }
     public DateTime? DeletadoEm { get; private set; }
     public DateTime? LembrarEm { get; private set; }
+    public int TipoAtendimentoId { get; private set; }
+    public TipoAtendimento TipoAtendimento { get; private set; } = null!;
+    public DateTime Fim { get; private set; }
+    public TimeSpan Duracao => Fim - DataHora;   // calculada, não vai pro banco
 
     private Consulta()
     {
     }
     
-    public Consulta(Guid pacienteId, Guid profissionalId, DateTime dataHora, string? observacao,
-        DateTime agoraUtc, DateTime? lembrarEm)
+    public Consulta(Guid pacienteId, Guid profissionalId, TipoAtendimento tipo, int? duracaoMinutos,
+        DateTime dataHora, string? observacao, DateTime agoraUtc, DateTime? lembrarEm)
     {
         if (dataHora <= agoraUtc)
         {
             throw new ArgumentException("Consulta não pode ser marcada no passado.", nameof(dataHora));
         }
 
+        var minutos = duracaoMinutos ?? tipo.DuracaoPadraoMinutos;   // sem ajuste, vale a padrão
+        tipo.ValidarDuracao(minutos);
+
         Id = Guid.CreateVersion7();
         PacienteId = pacienteId;
         ProfissionalId = profissionalId;
+        TipoAtendimentoId = tipo.Id;   // só o Id, veja abaixo
         DataHora = dataHora;
+        Fim = dataHora.AddMinutes(minutos);
         Observacao = observacao;
         StatusConsultaId = StatusConsulta.AgendadaId;
         Ativo = true;
@@ -57,7 +66,9 @@ public class Consulta :  IAuditavel, ISoftDelete
             throw new ArgumentException("Consulta não pode ser marcada no passado.", nameof(novaDataHora));
         }
 
+        var duracao = Duracao;   // guarda antes de mudar o início
         DataHora = novaDataHora;
+        Fim = novaDataHora + duracao;
         LembrarEm = lembrarEm;
         LembreteEnviadoEm = null;
     }

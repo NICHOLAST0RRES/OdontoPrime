@@ -8,6 +8,7 @@ public interface IClinicaDbContext
     DbSet<Paciente> Pacientes { get; }
     DbSet<Profissional> Profissionais { get; }
     DbSet<Consulta> Consultas { get; }
+    DbSet<TipoAtendimento> TiposAtendimento { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

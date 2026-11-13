@@ -59,10 +59,12 @@ public abstract class TesteDeIntegracao(InfraDeTeste infra) : IAsyncLifetime
 
     protected async Task<Guid> AgendarAsync(Guid pacienteId, Guid dentistaId, DateTimeOffset dataHora)
     {
+        
         using var escopo = NovoEscopo();
         var servico = escopo.ServiceProvider.GetRequiredService<ConsultaService>();
 
-        var resultado = await servico.AgendarAsync(pacienteId, dentistaId, dataHora.UtcDateTime, observacao: null);
+        var resultado = await servico.AgendarAsync(pacienteId, dentistaId, dataHora.UtcDateTime,
+            TipoAtendimento.AvaliacaoId, duracaoMinutos: null, observacao: null);
 
         Assert.True(resultado.Sucesso, resultado.Erro);
         return resultado.Valor!.Id;

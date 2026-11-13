@@ -27,7 +27,9 @@ public class ConsultaController : ControllerBase
         var resultado = await _service.AgendarAsync(
             dto.PacienteId,
             dto.ProfissionalId,
-            dto.DataHora,           //controller chama a service para validar as regras de negocio.
+            dto.DataHora,
+            dto.TipoAtendimentoId,
+            dto.DuracaoMinutos,
             dto.Observacao
         );
 
