@@ -1,12 +1,7 @@
 using System.Text;
 using System.Text.Json;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using OdontoPrime.Application;
-using OdontoPrime.Data;
-using OdontoPrime.Infra.Mensageria;
 using OdontoPrime.Infra.Mensageria.Outbox;
-using Xunit;
 
 namespace OdontoPrime.Tests;
 

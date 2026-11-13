@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using OdontoPrime.Application;
 using OdontoPrime.Data;
 using OdontoPrime.Domain.Models;
-using Xunit;
 
 namespace OdontoPrime.Tests;
 
@@ -45,7 +44,7 @@ namespace OdontoPrime.Tests;
             Assert.Single(resultados, r => r.Sucesso);                                              // 1.
             Assert.Equal(recepcionistas - 1, resultados.Count(r => r.TipoErro == TipoError.Conflito)); // 2.
             Assert.Equal(1, await ConsultasDoDentistaAsync(dentistaId));                            // 3.
-            Assert.Single(await OutboxAsync());                                                         // 4.  // 4. diz  Que só existe um evento na outbox: as gravações recusadas não deixam evento fantasma
+            Assert.Single(await OutboxAsync());                                                         // 4. diz Que só existe um evento na outbox: as gravações recusadas não deixam evento fantasma
             
         }
 
