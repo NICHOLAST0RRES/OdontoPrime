@@ -61,12 +61,7 @@ public class ConsultaService
         {
             return Result<Consulta>.Falha("Tipo de atendimento não encontrado.", TipoError.Invalido);
         }
-
-        if (await HorarioOcupadoAsync(profissionalId, dataHora, null))
-        {
-            return Result<Consulta>.Falha("Profissional já tem consulta nesse horário.", TipoError.Conflito);
-        }
-
+        
         try
         {
             var agora = _relogio.AgoraUtc();
@@ -74,6 +69,11 @@ public class ConsultaService
             
             var consulta = new Consulta(pacienteId, profissionalId, tipo, duracaoMinutos, dataHora, observacao, agora, lembrarEm);
             
+            if (await HorarioOcupadoAsync(profissionalId, consulta.DataHora, consulta.Fim, null))
+            {
+                return Result<Consulta>.Falha("Profissional já tem consulta nesse horário.", TipoError.Conflito);
+            }
+
             _context.Consultas.Add(consulta);
             
             _outbox.Adicionar(new ConsultaAgendada(
@@ -101,13 +101,14 @@ public class ConsultaService
     }
 
     
-    private Task<bool> HorarioOcupadoAsync(Guid profissionalId, DateTime dataHora, Guid? ignorarId)
+    private Task<bool> HorarioOcupadoAsync(Guid profissionalId, DateTime inicio, DateTime fim, Guid? ignorarId)
     {
         return _context.Consultas
             .AnyAsync(c =>
                 c.ProfissionalId == profissionalId &&
-                c.DataHora == dataHora &&
                 c.StatusConsultaId == StatusConsulta.AgendadaId &&
+                c.DataHora < fim &&
+                c.Fim > inicio &&
                 (ignorarId == null || c.Id != ignorarId));
     }
     
@@ -160,8 +161,7 @@ public class ConsultaService
             return Result.Falha("Consulta não encontrada.", TipoError.NaoEncontrado);
         }
 
-        if (await HorarioOcupadoAsync(consulta.ProfissionalId, novaDataHora, id))
-        {
+        if (await HorarioOcupadoAsync(consulta.ProfissionalId, novaDataHora, novaDataHora + consulta.Duracao, id))        {
             return Result.Falha("Profissional já tem consulta nesse horário.", TipoError.Conflito);
         }
 
