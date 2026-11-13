@@ -62,6 +62,7 @@ builder.Services.AddScoped<IProfissionalApiService, ProfissionalApiClient>();
 builder.Services.AddScoped<IConsultaApiService, ConsultaApiClient>();
 builder.Services.AddScoped<IConvenioApiService, ConvenioApiClient>();
 builder.Services.AddScoped<ITipoProfissionalApiService, TipoProfissionalApiClient>();
+builder.Services.AddScoped<ITipoAtendimentoApiService, TipoAtendimentoApiClient>();
 
 var app = builder.Build();
 

@@ -31,9 +31,10 @@ else
     <table class="table table-striped align-middle" id="tabela-consultas">
         <thead>
         <tr>
-            <th>Data/Hora</th>
+            <th>Horário</th>
             <th>Paciente</th>
             <th>Profissional</th>
+            <th>Tipo</th>
             <th>Status</th>
             <th>Observação</th>
             <th class="text-end">Ações</th>
@@ -50,9 +51,10 @@ else
                 _ => "bg-light text-dark"
             };
             <tr>
-                <td>@Relogio.ParaHorarioDaClinica(consulta.DataHora).ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@Relogio.ParaHorarioDaClinica(consulta.DataHora).ToString("dd/MM/yyyy HH:mm")–@Relogio.ParaHorarioDaClinica(consulta.Fim).ToString("HH:mm")</td>
                 <td>@consulta.PacienteNome</td>
                 <td>@consulta.ProfissionalNome</td>
+                <td>@consulta.TipoAtendimento</td>
                 <td><span class="badge @badge">@consulta.Status</span></td>
                 <td>@(consulta.Observacao ?? "-")</td>
                 <td class="text-end">

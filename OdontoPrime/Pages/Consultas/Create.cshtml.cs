@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OdontoPrime.Api.Dtos.Consulta;
+using OdontoPrime.Api.Dtos.TipoAtendimento;
 using OdontoPrime.Application;
 using OdontoPrime.Services;
 
@@ -12,17 +13,20 @@ public class CreateModel : PageModel
     private readonly IConsultaApiService _consultaApiService;
     private readonly IPacienteApiService _pacienteApiService;
     private readonly IProfissionalApiService _profissionalApiService;
+    private readonly ITipoAtendimentoApiService _tipoAtendimentoApiService;
     private readonly RelogioDaClinica _relogio;
 
     public CreateModel(
         IConsultaApiService consultaApiService,
         IPacienteApiService pacienteApiService,
         IProfissionalApiService profissionalApiService,
+        ITipoAtendimentoApiService tipoAtendimentoApiService,
         RelogioDaClinica relogio)
     {
         _consultaApiService = consultaApiService;
         _pacienteApiService = pacienteApiService;
         _profissionalApiService = profissionalApiService;
+        _tipoAtendimentoApiService = tipoAtendimentoApiService;
         _relogio = relogio;
     }
 
@@ -31,6 +35,7 @@ public class CreateModel : PageModel
 
     public List<SelectListItem> Pacientes { get; set; } = [];
     public List<SelectListItem> Dentistas { get; set; } = [];
+    public List<TipoAtendimentoResponseDTO> TiposAtendimento { get; set; } = [];
 
     public async Task OnGetAsync()
     {
@@ -54,6 +59,8 @@ public class CreateModel : PageModel
             PacienteId = Input.PacienteId,
             ProfissionalId = Input.ProfissionalId,
             DataHora = Input.DataHora,
+            TipoAtendimentoId = Input.TipoAtendimentoId,
+            DuracaoMinutos = Input.DuracaoMinutos,
             Observacao = string.IsNullOrWhiteSpace(Input.Observacao) ? null : Input.Observacao
         };
 
@@ -79,5 +86,7 @@ public class CreateModel : PageModel
             .Where(p => p.TipoProfissional == "Dentista")
             .Select(p => new SelectListItem(p.Nome, p.Id.ToString()))
             .ToList();
+
+        TiposAtendimento = await _tipoAtendimentoApiService.ListarAsync();
     }
 }
