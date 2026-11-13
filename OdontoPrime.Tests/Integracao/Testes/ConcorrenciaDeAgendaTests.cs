@@ -45,6 +45,8 @@ namespace OdontoPrime.Tests;
             Assert.Single(resultados, r => r.Sucesso);                                              // 1.
             Assert.Equal(recepcionistas - 1, resultados.Count(r => r.TipoErro == TipoError.Conflito)); // 2.
             Assert.Equal(1, await ConsultasDoDentistaAsync(dentistaId));                            // 3.
+            Assert.Single(await OutboxAsync());                                                         // 4.  // 4. diz  Que só existe um evento na outbox: as gravações recusadas não deixam evento fantasma
+            
         }
 
         private async Task<Result> AgendarEmEscopoProprioAsync(Guid pacienteId, Guid dentistaId, DateTime horarioUtc)

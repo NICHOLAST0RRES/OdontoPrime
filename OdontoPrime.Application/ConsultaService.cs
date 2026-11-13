@@ -94,6 +94,10 @@ public class ConsultaService
             return Result<Consulta>.Falha(ex.Message, TipoError.Invalido);
         }
         
+        catch (HorarioOcupadoException ex)
+        {
+            return Result<Consulta>.Falha(ex.Message, TipoError.Conflito);
+        }
     }
 
     
@@ -183,11 +187,20 @@ public class ConsultaService
             await _context.SaveChangesAsync();
 
             return Result.Ok();
+            
+            
         }
+        catch (HorarioOcupadoException ex)
+        {
+            return Result.Falha(ex.Message, TipoError.Conflito);
+        }
+        
+        
         catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)
         {
             return Result.Falha(ex.Message, TipoError.Invalido);
         }
+        
     }
     
     public async Task<Result> RealizarAsync(Guid id)
