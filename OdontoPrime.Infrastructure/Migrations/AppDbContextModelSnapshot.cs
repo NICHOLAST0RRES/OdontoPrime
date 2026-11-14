@@ -414,6 +414,38 @@ namespace OdontoPrime.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.OwnsMany("OdontoPrime.Domain.Models.PeriodoDeTrabalho", "Jornada", b1 =>
+                        {
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("integer");
+
+                            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b1.Property<int>("Id"));
+
+                            b1.Property<int>("Dia")
+                                .HasColumnType("integer");
+
+                            b1.Property<TimeOnly>("Fim")
+                                .HasColumnType("time without time zone");
+
+                            b1.Property<TimeOnly>("Inicio")
+                                .HasColumnType("time without time zone");
+
+                            b1.Property<Guid>("ProfissionalId")
+                                .HasColumnType("uuid");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("ProfissionalId");
+
+                            b1.ToTable("JornadaDosProfissionais", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("ProfissionalId");
+                        });
+
+                    b.Navigation("Jornada");
+
                     b.Navigation("TipoProfissional");
                 });
 #pragma warning restore 612, 618
