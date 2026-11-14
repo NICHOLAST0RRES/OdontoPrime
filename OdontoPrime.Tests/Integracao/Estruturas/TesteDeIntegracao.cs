@@ -51,6 +51,9 @@ public abstract class TesteDeIntegracao(InfraDeTeste infra) : IAsyncLifetime
 
         var paciente = new Paciente("Maria Teste", "52998224725", "71999990000", "maria@teste.com", convenio.Id);
         var dentista = new Profissional("Dr. Teste", "71988880000", TipoProfissional.DentistaId, "CRO-BA 1234");
+        // Jornada ampla: os testes marcam em qualquer dia e horário comercial sem esbarrar na regra da jornada.
+        dentista.DefinirJornada(Enum.GetValues<DayOfWeek>()
+            .Select(dia => new PeriodoDeTrabalho(dia, new TimeOnly(7, 0), new TimeOnly(22, 0))));
         db.AddRange(paciente, dentista);
         await db.SaveChangesAsync(Ct);
 

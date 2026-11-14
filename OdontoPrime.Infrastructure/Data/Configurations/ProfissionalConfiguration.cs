@@ -35,6 +35,20 @@ public class ProfissionalConfiguration : IEntityTypeConfiguration<Profissional>
             .WithMany()
             .HasForeignKey(p => p.TipoProfissionalId)
             .OnDelete(DeleteBehavior.Restrict);
+        
+        builder.OwnsMany(p => p.Jornada, jornada =>
+        {
+            jornada.ToTable("JornadaDosProfissionais");
+            jornada.WithOwner().HasForeignKey("ProfissionalId");
+            jornada.Property<int>("Id");
+            jornada.HasKey("Id");
+            jornada.Property(p => p.Dia).IsRequired();
+            jornada.Property(p => p.Inicio).IsRequired();
+            jornada.Property(p => p.Fim).IsRequired();
+        });
+
+        builder.Navigation(p => p.Jornada).HasField("_jornada");
+        
     }
 }
 
