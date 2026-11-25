@@ -67,9 +67,9 @@ public class ConsultaController : ControllerBase
     }
 
     [HttpPut("{id}/reagendar")]
-    public async Task<IActionResult> Reagendar(Guid id, [FromBody] DateTime novaDataHora)
+    public async Task<IActionResult> Reagendar(Guid id, [FromBody] ReagendarConsultaDTO dto)
     {
-        var resultado = await _service.ReagendarAsync(id, novaDataHora);
+        var resultado = await _service.ReagendarAsync(id, dto.NovaDataHora, dto.MotivoEncaixe);
 
         return resultado.Sucesso ? NoContent() : TraduzirErro(resultado);
     }

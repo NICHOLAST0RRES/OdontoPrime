@@ -53,7 +53,7 @@ public class Profissional  : IAuditavel, ISoftDelete
         for (var j = i + 1; j < novos.Count; j++)
         {
             if (novos[i].Sobrepoe(novos[j]))
-                throw new ArgumentException($"Há períodos sobrepostos na jornada de {novos[i].Dia}.");
+                throw new ArgumentException($"{PeriodoDeTrabalho.NomeDoDia(novos[i].Dia)}: há períodos sobrepostos na jornada.");
         }
 
         _jornada.Clear();

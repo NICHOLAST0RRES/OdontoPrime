@@ -22,5 +22,8 @@ public class ConsultaFormInput
 
     [StringLength(500)]
     public string? Observacao { get; set; }
+
+    [StringLength(200, ErrorMessage = "O motivo do encaixe pode ter no máximo 200 caracteres.")]
+    public string? MotivoEncaixe { get; set; }
     
 }

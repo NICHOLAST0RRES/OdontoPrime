@@ -25,6 +25,14 @@ public class ReagendarModel : PageModel
     [DataType(DataType.DateTime)]
     public DateTime NovaDataHora { get; set; }
 
+    [BindProperty]
+    [StringLength(200, ErrorMessage = "O motivo do encaixe pode ter no máximo 200 caracteres.")]
+    public string? MotivoEncaixe { get; set; }
+
+    // Fica true quando a API respondeu "fora da jornada" (422): a tela mostra o campo de motivo do encaixe.
+    public bool OferecerEncaixe { get; private set; }
+    public string? AvisoEncaixe { get; private set; }
+
     public string? PacienteNome { get; set; }
     public string? ProfissionalNome { get; set; }
 
@@ -50,10 +58,20 @@ public class ReagendarModel : PageModel
             return Page();
         }
 
-        var resultado = await _consultaApiService.ReagendarAsync(Id, NovaDataHora);
+        var resultado = await _consultaApiService.ReagendarAsync(Id, NovaDataHora, MotivoEncaixe);
         if (!resultado.Success)
         {
-            ModelState.AddModelError(string.Empty, resultado.ErrorMessage!);
+            if (resultado.ForaDaJornada)
+            {
+                OferecerEncaixe = true;
+                AvisoEncaixe = resultado.ErrorMessage;
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, resultado.ErrorMessage!);
+                OferecerEncaixe = !string.IsNullOrWhiteSpace(MotivoEncaixe);   // mantém o campo se já estava aberto
+            }
+
             await CarregarContextoAsync();
             return Page();
         }

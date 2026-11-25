@@ -54,7 +54,13 @@ else
                 <td>@Relogio.ParaHorarioDaClinica(consulta.DataHora).ToString("dd/MM/yyyy HH:mm")–@Relogio.ParaHorarioDaClinica(consulta.Fim).ToString("HH:mm")</td>
                 <td>@consulta.PacienteNome</td>
                 <td>@consulta.ProfissionalNome</td>
-                <td>@consulta.TipoAtendimento</td>
+                <td>
+                    @consulta.TipoAtendimento
+                    @if (consulta.Encaixe)
+                    {
+                        <span class="badge bg-warning text-dark" title="@consulta.MotivoEncaixe">Encaixe</span>
+                    }
+                </td>
                 <td><span class="badge @badge">@consulta.Status</span></td>
                 <td>@(consulta.Observacao ?? "-")</td>
                 <td class="text-end">
