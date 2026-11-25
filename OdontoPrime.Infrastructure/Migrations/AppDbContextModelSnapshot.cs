@@ -22,6 +22,39 @@ namespace OdontoPrime.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("OdontoPrime.Domain.Models.Bloqueio", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("AtualizadoEm")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("CriadoEm")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("Fim")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("Inicio")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Motivo")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<Guid>("ProfissionalId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProfissionalId", "Inicio");
+
+                    b.ToTable("Bloqueios", (string)null);
+                });
+
             modelBuilder.Entity("OdontoPrime.Domain.Models.Consulta", b =>
                 {
                     b.Property<Guid>("Id")
@@ -45,6 +78,9 @@ namespace OdontoPrime.Migrations
                     b.Property<DateTime?>("DeletadoEm")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<bool>("Encaixe")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime>("Fim")
                         .HasColumnType("timestamp with time zone");
 
@@ -53,6 +89,10 @@ namespace OdontoPrime.Migrations
 
                     b.Property<DateTime?>("LembreteEnviadoEm")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("MotivoEncaixe")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("Observacao")
                         .HasMaxLength(500)
@@ -84,7 +124,10 @@ namespace OdontoPrime.Migrations
 
                     b.HasIndex("ProfissionalId", "DataHora");
 
-                    b.ToTable("Consultas", (string)null);
+                    b.ToTable("Consultas", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Consultas_EncaixeTemMotivo", "NOT \"Encaixe\" OR \"MotivoEncaixe\" IS NOT NULL");
+                        });
                 });
 
             modelBuilder.Entity("OdontoPrime.Domain.Models.Convenio", b =>
@@ -358,6 +401,15 @@ namespace OdontoPrime.Migrations
                         .HasFilter("\"PublicadoEm\" IS NULL");
 
                     b.ToTable("OutboxMensagens", (string)null);
+                });
+
+            modelBuilder.Entity("OdontoPrime.Domain.Models.Bloqueio", b =>
+                {
+                    b.HasOne("OdontoPrime.Domain.Models.Profissional", null)
+                        .WithMany()
+                        .HasForeignKey("ProfissionalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("OdontoPrime.Domain.Models.Consulta", b =>

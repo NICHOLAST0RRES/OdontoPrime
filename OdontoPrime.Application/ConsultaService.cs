@@ -27,7 +27,8 @@ public class ConsultaService
         DateTime dataHora,
         int tipoAtendimentoId,
         int? duracaoMinutos,
-        string? observacao)
+        string? observacao,
+        string? motivoEncaixe = null)
     
     {
         var paciente = await _context.Pacientes
@@ -68,6 +69,12 @@ public class ConsultaService
             var lembrarEm = _politicaDeLembrete.CalcularLembrarEm(dataHora, agora);
             
             var consulta = new Consulta(pacienteId, profissionalId, tipo, duracaoMinutos, dataHora, observacao, agora, lembrarEm);
+
+            var falhaDaAgenda = await AplicarRegrasDaAgendaAsync(profissional, consulta, motivoEncaixe);
+            if (falhaDaAgenda is not null)
+            {
+                return Result<Consulta>.Falha(falhaDaAgenda.Value.Mensagem, falhaDaAgenda.Value.Tipo);
+            }
             
             if (await HorarioOcupadoAsync(profissionalId, consulta.DataHora, consulta.Fim, null))
             {
@@ -101,6 +108,39 @@ public class ConsultaService
     }
 
     
+    // Aplica a jornada, os bloqueios e o encaixe. Devolve a falha, ou null se o horário pode ser usado.
+    private async Task<(TipoError Tipo, string Mensagem)?> AplicarRegrasDaAgendaAsync(
+        Profissional profissional, Consulta consulta, string? motivoEncaixe)
+    {
+        // A jornada que vale é a do dia na clínica, não a do dia em UTC.
+        var dataNaClinica = DateOnly.FromDateTime(_relogio.ParaHorarioDaClinica(consulta.DataHora));
+        var jornada = profissional.JornadaEm(dataNaClinica, _relogio.Fuso);
+
+        var bloqueios = (await _context.Bloqueios
+                .AsNoTracking()
+                .Where(b => b.ProfissionalId == profissional.Id && b.Inicio < consulta.Fim && b.Fim > consulta.DataHora)
+                .ToListAsync())
+            .Select(b => b.Periodo)   // em memória: o EF não traduz o construtor do Intervalo pra SQL
+            .ToList();
+
+        switch (RegraDaAgenda.Avaliar(consulta.Periodo, jornada, bloqueios))
+        {
+            case SituacaoDoHorario.Bloqueado:
+                return (TipoError.Conflito, "A agenda do dentista está bloqueada nesse período.");
+
+            case SituacaoDoHorario.ForaDaJornada when string.IsNullOrWhiteSpace(motivoEncaixe):
+                return (TipoError.ForaDaJornada,
+                    $"Fora da jornada de {profissional.Nome}. Para marcar mesmo assim, confirme como encaixe e informe o motivo.");
+
+            case SituacaoDoHorario.ForaDaJornada:
+                consulta.MarcarComoEncaixe(motivoEncaixe!);
+                return null;
+
+            default:
+                return null;
+        }
+    }
+
     private Task<bool> HorarioOcupadoAsync(Guid profissionalId, DateTime inicio, DateTime fim, Guid? ignorarId)
     {
         return _context.Consultas
@@ -149,7 +189,7 @@ public class ConsultaService
         }
     }
     
-    public async Task<Result> ReagendarAsync(Guid id, DateTime novaDataHora)
+    public async Task<Result> ReagendarAsync(Guid id, DateTime novaDataHora, string? motivoEncaixe = null)
     {
         var consulta = await _context.Consultas
             .Include(c => c.Paciente)
@@ -173,6 +213,12 @@ public class ConsultaService
             var lembrarEm = _politicaDeLembrete.CalcularLembrarEm(novaDataHora, agora);
             
             consulta.Reagendar(novaDataHora , agora , lembrarEm);
+
+            var falhaDaAgenda = await AplicarRegrasDaAgendaAsync(consulta.Profissional, consulta, motivoEncaixe);
+            if (falhaDaAgenda is not null)
+            {
+                return Result.Falha(falhaDaAgenda.Value.Mensagem, falhaDaAgenda.Value.Tipo);
+            }
 
             _outbox.Adicionar(new ConsultaReagendada(
                 consulta.Id,
