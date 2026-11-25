@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using OdontoPrime.Api.Dtos.Jornada;
 using OdontoPrime.Api.Dtos.TipoProfissional;
 
 namespace OdontoPrime.Services;
@@ -11,6 +12,8 @@ public interface IProfissionalApiService
     Task<ApiResult> AtualizarAsync(Guid id, ProfissionalRequestDTO dto);
     Task<ApiResult> DesativarAsync(Guid id);
     Task<ApiResult> ReativarAsync(Guid id);
+    Task<List<PeriodoDeTrabalhoDTO>> ObterJornadaAsync(Guid id);
+    Task<ApiResult> DefinirJornadaAsync(Guid id, List<PeriodoDeTrabalhoDTO> periodos);
 }
 
 public class ProfissionalApiClient : IProfissionalApiService
@@ -75,6 +78,22 @@ public class ProfissionalApiClient : IProfissionalApiService
     public async Task<ApiResult> ReativarAsync(Guid id)
     {
         var response = await _client.PostAsync($"Profissional/{id}/reativar", null);
+        if (!response.IsSuccessStatusCode)
+        {
+            return ApiResult.Fail(await ApiErrorHelper.ExtractErrorMessageAsync(response));
+        }
+
+        return ApiResult.Ok();
+    }
+
+    public async Task<List<PeriodoDeTrabalhoDTO>> ObterJornadaAsync(Guid id)
+    {
+        return await _client.GetFromJsonAsync<List<PeriodoDeTrabalhoDTO>>($"Profissional/{id}/jornada") ?? [];
+    }
+
+    public async Task<ApiResult> DefinirJornadaAsync(Guid id, List<PeriodoDeTrabalhoDTO> periodos)
+    {
+        var response = await _client.PutAsJsonAsync($"Profissional/{id}/jornada", periodos);
         if (!response.IsSuccessStatusCode)
         {
             return ApiResult.Fail(await ApiErrorHelper.ExtractErrorMessageAsync(response));

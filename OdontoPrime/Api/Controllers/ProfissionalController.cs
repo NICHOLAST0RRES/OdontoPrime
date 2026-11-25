@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OdontoPrime.Api.Dtos.Jornada;
 using OdontoPrime.Api.Dtos.TipoProfissional;
 using OdontoPrime.Data;
 using OdontoPrime.Domain.Models;
@@ -139,4 +140,51 @@ public class ProfissionalController: ControllerBase
         return NoContent();
     }
     
+
+    [HttpGet("{id}/jornada")]
+    public async Task<IActionResult> ObterJornada(Guid id)
+    {
+        var profissional = await _context.Profissionais
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Id == id);
+
+        if (profissional is null)
+        {
+            return NotFound();
+        }
+
+        var jornada = profissional.Jornada
+            .OrderBy(p => p.Dia)
+            .ThenBy(p => p.Inicio)
+            .Select(p => new PeriodoDeTrabalhoDTO { Dia = p.Dia, Inicio = p.Inicio, Fim = p.Fim })
+            .ToList();
+
+        return Ok(jornada);
+    }
+
+    // Substitui a jornada inteira: a tela salva a semana toda de uma vez.
+    [HttpPut("{id}/jornada")]
+    public async Task<IActionResult> DefinirJornada(Guid id, [FromBody] List<PeriodoDeTrabalhoDTO> periodos)
+    {
+        var profissional = await _context.Profissionais
+            .FirstOrDefaultAsync(p => p.Id == id);
+
+        if (profissional is null)
+        {
+            return NotFound();
+        }
+
+        try
+        {
+            profissional.DefinirJornada(periodos.Select(p => new PeriodoDeTrabalho(p.Dia, p.Inicio, p.Fim)));
+        }
+        catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)
+        {
+            return BadRequest(ex.Message);
+        }
+
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
 }
