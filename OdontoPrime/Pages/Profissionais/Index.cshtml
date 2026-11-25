@@ -49,6 +49,7 @@ else
                     @if (profissional.TipoProfissional == "Dentista")
                     {
                         <a asp-page="Jornada" asp-route-id="@profissional.Id" class="btn btn-sm btn-outline-primary">Jornada</a>
+                        <a asp-page="Bloqueios" asp-route-id="@profissional.Id" class="btn btn-sm btn-outline-primary">Bloqueios</a>
                     }
                     <a asp-page="Edit" asp-route-id="@profissional.Id" class="btn btn-sm btn-outline-secondary">Editar</a>
                     <form method="post" asp-page-handler="Desativar" asp-route-id="@profissional.Id" class="d-inline"

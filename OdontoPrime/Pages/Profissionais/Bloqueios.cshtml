@@ -1,0 +1,100 @@
+@page "{id:guid}"
+@model OdontoPrime.Pages.Profissionais.BloqueiosModel
+@inject OdontoPrime.Application.RelogioDaClinica Relogio
+@{
+    ViewData["Title"] = "Bloqueios";
+}
+
+<div class="op-page-head">
+    <h1>Bloqueios de @Model.NomeDoDentista</h1>
+    <a asp-page="Index" class="btn btn-outline-secondary">Voltar</a>
+</div>
+
+@if (Model.Mensagem is not null)
+{
+    <div class="alert alert-info">@Model.Mensagem</div>
+}
+
+<div class="op-form-card mb-4">
+<h2 class="h5">Novo bloqueio</h2>
+<p class="text-muted">Férias, congresso, consulta médica: o período em que o dentista não atende. Consultas agendadas no período precisam ser remarcadas ou canceladas antes.</p>
+
+<div asp-validation-summary="All" class="text-danger"></div>
+
+<form method="post" class="row g-3">
+    <div class="col-md-3">
+        <label asp-for="Input.Inicio" class="form-label"></label>
+        <input asp-for="Input.Inicio" type="text" id="Inicio" class="form-control"/>
+    </div>
+
+    <div class="col-md-3">
+        <label asp-for="Input.Fim" class="form-label"></label>
+        <input asp-for="Input.Fim" type="text" id="Fim" class="form-control"/>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Input.Motivo" class="form-label"></label>
+        <input asp-for="Input.Motivo" class="form-control" maxlength="200"/>
+    </div>
+
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Bloquear agenda</button>
+    </div>
+</form>
+</div>
+
+<h2 class="h5">Bloqueios em andamento e futuros</h2>
+
+@if (!Model.Bloqueios.Any())
+{
+    <div class="op-empty">Nenhum bloqueio.</div>
+}
+else
+{
+    <div class="op-table-wrap">
+    <table class="table table-striped align-middle">
+        <thead>
+        <tr>
+            <th>Início</th>
+            <th>Fim</th>
+            <th>Motivo</th>
+            <th class="text-end">Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var bloqueio in Model.Bloqueios)
+        {
+            <tr>
+                <td>@Relogio.ParaHorarioDaClinica(bloqueio.Inicio).ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@Relogio.ParaHorarioDaClinica(bloqueio.Fim).ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@bloqueio.Motivo</td>
+                <td class="text-end">
+                    <form method="post" asp-page-handler="Remover" asp-route-id="@Model.Id" asp-route-bloqueioId="@bloqueio.Id" class="d-inline"
+                          onsubmit="return confirm('Remover este bloqueio? A agenda volta a aceitar consultas nesse período.');">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Remover</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    </div>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"/>
+
+    <script>
+        // Mesma configuração da tela de nova consulta.
+        const opcoes = {
+            enableTime: true,
+            dateFormat: "d/m/Y H:i",
+            time_24hr: true,
+            minuteIncrement: 15,
+            minDate: "today",
+            locale: "pt"
+        };
+        flatpickr("#Inicio", opcoes);
+        flatpickr("#Fim", opcoes);
+    </script>
+}
