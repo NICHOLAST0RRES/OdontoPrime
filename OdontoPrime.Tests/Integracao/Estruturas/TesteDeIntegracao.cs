@@ -40,6 +40,10 @@ public abstract class TesteDeIntegracao(InfraDeTeste infra) : IAsyncLifetime
 
     // ---------- Preparar ----------
 
+    // Todos os dias, 07:00–22:00: os testes agendam em qualquer dia sem esbarrar na regra da jornada.
+    protected static IEnumerable<PeriodoDeTrabalho> JornadaAmpla()
+        => Enum.GetValues<DayOfWeek>().Select(dia => new PeriodoDeTrabalho(dia, new TimeOnly(7, 0), new TimeOnly(22, 0)));
+
     protected async Task<(Guid PacienteId, Guid DentistaId)> CriarPacienteEDentistaAsync()
     {
         using var escopo = NovoEscopo();
@@ -51,9 +55,7 @@ public abstract class TesteDeIntegracao(InfraDeTeste infra) : IAsyncLifetime
 
         var paciente = new Paciente("Maria Teste", "52998224725", "71999990000", "maria@teste.com", convenio.Id);
         var dentista = new Profissional("Dr. Teste", "71988880000", TipoProfissional.DentistaId, "CRO-BA 1234");
-        // Jornada ampla: os testes marcam em qualquer dia e horário comercial sem esbarrar na regra da jornada.
-        dentista.DefinirJornada(Enum.GetValues<DayOfWeek>()
-            .Select(dia => new PeriodoDeTrabalho(dia, new TimeOnly(7, 0), new TimeOnly(22, 0))));
+        dentista.DefinirJornada(JornadaAmpla());
         db.AddRange(paciente, dentista);
         await db.SaveChangesAsync(Ct);
 

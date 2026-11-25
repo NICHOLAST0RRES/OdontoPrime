@@ -27,6 +27,11 @@ public class Consulta :  IAuditavel, ISoftDelete
     public DateTime Fim { get; private set; }
     public TimeSpan Duracao => Fim - DataHora;   // calculada, não vai pro banco
 
+    public const int TamanhoMaximoDoMotivoDeEncaixe = 200;
+    public bool Encaixe { get; private set; }
+    public string? MotivoEncaixe { get; private set; }
+    public Intervalo Periodo => new(DataHora, Fim);   // calculado, não vai pro banco
+
     private Consulta()
     {
     }
@@ -71,6 +76,22 @@ public class Consulta :  IAuditavel, ISoftDelete
         Fim = novaDataHora + duracao;
         LembrarEm = lembrarEm;
         LembreteEnviadoEm = null;
+
+        // O novo horário é avaliado de novo pelo service: pode deixar de ser, ou passar a ser, encaixe.
+        Encaixe = false;
+        MotivoEncaixe = null;
+    }
+
+    public void MarcarComoEncaixe(string motivo)
+    {
+        if (string.IsNullOrWhiteSpace(motivo))
+            throw new ArgumentException("Informe o motivo do encaixe.", nameof(motivo));
+
+        if (motivo.Trim().Length > TamanhoMaximoDoMotivoDeEncaixe)
+            throw new ArgumentException($"O motivo do encaixe pode ter no máximo {TamanhoMaximoDoMotivoDeEncaixe} caracteres.", nameof(motivo));
+
+        Encaixe = true;
+        MotivoEncaixe = motivo.Trim();
     }
 
     public void Cancelar()

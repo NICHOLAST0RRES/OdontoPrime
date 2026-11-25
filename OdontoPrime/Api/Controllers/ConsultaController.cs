@@ -30,7 +30,8 @@ public class ConsultaController : ControllerBase
             dto.DataHora,
             dto.TipoAtendimentoId,
             dto.DuracaoMinutos,
-            dto.Observacao
+            dto.Observacao,
+            dto.MotivoEncaixe
         );
 
         if (!resultado.Sucesso)
@@ -95,6 +96,7 @@ public class ConsultaController : ControllerBase
         {
             TipoError.NaoEncontrado => NotFound(resultado.Erro),
             TipoError.Conflito => Conflict(resultado.Erro),
+            TipoError.ForaDaJornada => UnprocessableEntity(resultado.Erro),
             _ => BadRequest(resultado.Erro)
         };
     }

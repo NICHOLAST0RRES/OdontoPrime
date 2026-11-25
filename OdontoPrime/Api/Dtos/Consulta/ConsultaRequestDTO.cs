@@ -8,4 +8,5 @@ public record ConsultaRequestDTO
     public string? Observacao { get; set; }
     public int TipoAtendimentoId { get; set; }
     public int? DuracaoMinutos { get; set; }   // vazio = duração padrão do tipo
+    public string? MotivoEncaixe { get; set; }  // preenchido só quando a recepção confirma o encaixe
 }

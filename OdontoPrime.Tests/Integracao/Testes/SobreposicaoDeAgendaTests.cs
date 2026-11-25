@@ -96,6 +96,7 @@ public class SobreposicaoDeAgendaTests(InfraDeTeste infra) : TesteDeIntegracao(i
         var db = escopo.ServiceProvider.GetRequiredService<AppDbContext>();
 
         var dentista = new Profissional("Dra. Outra", "71977770000", TipoProfissional.DentistaId, "CRO-BA 5678");
+        dentista.DefinirJornada(JornadaAmpla());
         db.Profissionais.Add(dentista);
         await db.SaveChangesAsync(Ct);
 

@@ -78,6 +78,9 @@ namespace OdontoPrime.Migrations
                     b.Property<DateTime?>("DeletadoEm")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<bool>("Encaixe")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime>("Fim")
                         .HasColumnType("timestamp with time zone");
 
@@ -86,6 +89,10 @@ namespace OdontoPrime.Migrations
 
                     b.Property<DateTime?>("LembreteEnviadoEm")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("MotivoEncaixe")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("Observacao")
                         .HasMaxLength(500)
@@ -117,7 +124,10 @@ namespace OdontoPrime.Migrations
 
                     b.HasIndex("ProfissionalId", "DataHora");
 
-                    b.ToTable("Consultas", (string)null);
+                    b.ToTable("Consultas", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Consultas_EncaixeTemMotivo", "NOT \"Encaixe\" OR \"MotivoEncaixe\" IS NOT NULL");
+                        });
                 });
 
             modelBuilder.Entity("OdontoPrime.Domain.Models.Convenio", b =>

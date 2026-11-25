@@ -8,7 +8,9 @@ public class ConsultaConfiguration : IEntityTypeConfiguration<Consulta>
 {
     public void Configure(EntityTypeBuilder<Consulta> builder)
     {
-        builder.ToTable("Consultas");
+        // Encaixe exige motivo: o domínio já garante, o banco protege contra INSERT feito direto em SQL.
+        builder.ToTable("Consultas", tabela =>
+            tabela.HasCheckConstraint("CK_Consultas_EncaixeTemMotivo", "NOT \"Encaixe\" OR \"MotivoEncaixe\" IS NOT NULL"));
         builder.HasKey(c => c.Id);
 
         builder.Property(c => c.DataHora)
@@ -46,6 +48,10 @@ public class ConsultaConfiguration : IEntityTypeConfiguration<Consulta>
         
         builder.Property(c => c.Fim).IsRequired();
         builder.Ignore(c => c.Duracao);
+        builder.Ignore(c => c.Periodo);
+
+        builder.Property(c => c.MotivoEncaixe)
+            .HasMaxLength(Consulta.TamanhoMaximoDoMotivoDeEncaixe);
 
         builder.HasOne(c => c.TipoAtendimento)
             .WithMany()

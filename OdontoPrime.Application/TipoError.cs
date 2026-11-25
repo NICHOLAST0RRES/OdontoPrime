@@ -4,5 +4,6 @@ public enum TipoError
 {
     NaoEncontrado,
     Invalido,
-    Conflito
+    Conflito,
+    ForaDaJornada
 }
