@@ -59,8 +59,28 @@
         <span asp-validation-for="Input.Observacao" class="text-danger"></span>
     </div>
 
+    @if (Model.OferecerEncaixe)
+    {
+        <div class="col-12">
+            <div class="alert alert-warning mb-0">
+                <strong>@(Model.AvisoEncaixe ?? "Horário fora da jornada do dentista.")</strong>
+                <label asp-for="Input.MotivoEncaixe" class="form-label d-block mt-2">Motivo do encaixe</label>
+                <textarea asp-for="Input.MotivoEncaixe" class="form-control" rows="2" maxlength="200"
+                          placeholder="Ex.: dor forte, paciente não pode esperar"></textarea>
+                <span asp-validation-for="Input.MotivoEncaixe" class="text-danger"></span>
+            </div>
+        </div>
+    }
+
     <div class="col-12">
-        <button type="submit" class="btn btn-primary">Agendar</button>
+        @if (Model.OferecerEncaixe)
+        {
+            <button type="submit" class="btn btn-warning">Confirmar encaixe</button>
+        }
+        else
+        {
+            <button type="submit" class="btn btn-primary">Agendar</button>
+        }
         <a asp-page="Index" class="btn btn-outline-secondary">Cancelar</a>
     </div>
 </form>

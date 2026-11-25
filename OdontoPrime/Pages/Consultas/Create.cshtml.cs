@@ -33,6 +33,10 @@ public class CreateModel : PageModel
     [BindProperty]
     public ConsultaFormInput Input { get; set; } = new();
 
+    // Fica true quando a API respondeu "fora da jornada" (422): a tela mostra o campo de motivo do encaixe.
+    public bool OferecerEncaixe { get; private set; }
+    public string? AvisoEncaixe { get; private set; }
+
     public List<SelectListItem> Pacientes { get; set; } = [];
     public List<SelectListItem> Dentistas { get; set; } = [];
     public List<TipoAtendimentoResponseDTO> TiposAtendimento { get; set; } = [];
@@ -61,13 +65,24 @@ public class CreateModel : PageModel
             DataHora = Input.DataHora,
             TipoAtendimentoId = Input.TipoAtendimentoId,
             DuracaoMinutos = Input.DuracaoMinutos,
-            Observacao = string.IsNullOrWhiteSpace(Input.Observacao) ? null : Input.Observacao
+            Observacao = string.IsNullOrWhiteSpace(Input.Observacao) ? null : Input.Observacao,
+            MotivoEncaixe = string.IsNullOrWhiteSpace(Input.MotivoEncaixe) ? null : Input.MotivoEncaixe
         };
 
         var resultado = await _consultaApiService.CriarAsync(dto);
         if (!resultado.Success)
         {
-            ModelState.AddModelError(string.Empty, resultado.ErrorMessage!);
+            if (resultado.ForaDaJornada)
+            {
+                OferecerEncaixe = true;
+                AvisoEncaixe = resultado.ErrorMessage;
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, resultado.ErrorMessage!);
+                OferecerEncaixe = !string.IsNullOrWhiteSpace(Input.MotivoEncaixe);   // mantém o campo se já estava aberto
+            }
+
             await CarregarListasAsync();
             return Page();
         }

@@ -11,7 +11,7 @@ public interface IConsultaApiService
     Task<List<ConsultaResponseDTO>> ListarAsync();
     Task<ConsultaResponseDTO?> ObterAsync(Guid id);
     Task<ApiResult<ConsultaResponseDTO>> CriarAsync(ConsultaRequestDTO dto);
-    Task<ApiResult> ReagendarAsync(Guid id, DateTime novaDataHora);
+    Task<ApiResult> ReagendarAsync(Guid id, DateTime novaDataHora, string? motivoEncaixe = null);
     Task<ApiResult> CancelarAsync(Guid id);
     Task<ApiResult> RealizarAsync(Guid id);
 }
@@ -52,19 +52,25 @@ public class ConsultaApiClient : IConsultaApiService
         var response = await _client.PostAsJsonAsync("Consulta", dto);
         if (!response.IsSuccessStatusCode)
         {
-            return ApiResult<ConsultaResponseDTO>.Fail(await ApiErrorHelper.ExtractErrorMessageAsync(response));
+            return ApiResult<ConsultaResponseDTO>.Fail(await ApiErrorHelper.ExtractErrorMessageAsync(response), response.StatusCode);
         }
 
         var criada = await response.Content.ReadFromJsonAsync<ConsultaResponseDTO>();
         return ApiResult<ConsultaResponseDTO>.Ok(criada!);
     }
 
-    public async Task<ApiResult> ReagendarAsync(Guid id, DateTime novaDataHora)
+    public async Task<ApiResult> ReagendarAsync(Guid id, DateTime novaDataHora, string? motivoEncaixe = null)
     {
-        var response = await _client.PutAsJsonAsync($"Consulta/{id}/reagendar", _relogio.ParaUtc(novaDataHora));
+        var dto = new ReagendarConsultaDTO
+        {
+            NovaDataHora = _relogio.ParaUtc(novaDataHora),
+            MotivoEncaixe = string.IsNullOrWhiteSpace(motivoEncaixe) ? null : motivoEncaixe
+        };
+
+        var response = await _client.PutAsJsonAsync($"Consulta/{id}/reagendar", dto);
         if (!response.IsSuccessStatusCode)
         {
-            return ApiResult.Fail(await ApiErrorHelper.ExtractErrorMessageAsync(response));
+            return ApiResult.Fail(await ApiErrorHelper.ExtractErrorMessageAsync(response), response.StatusCode);
         }
 
         return ApiResult.Ok();

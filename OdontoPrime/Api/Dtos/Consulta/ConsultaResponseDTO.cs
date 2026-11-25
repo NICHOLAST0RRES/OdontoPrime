@@ -12,4 +12,6 @@ public record ConsultaResponseDTO
     public DateTime Fim { get; set; }
     public string TipoAtendimento { get; set; } = null!;
     public string? Observacao { get; set; }
+    public bool Encaixe { get; set; }
+    public string? MotivoEncaixe { get; set; }
 }
