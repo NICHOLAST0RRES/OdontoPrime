@@ -22,6 +22,39 @@ namespace OdontoPrime.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("OdontoPrime.Domain.Models.Bloqueio", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("AtualizadoEm")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("CriadoEm")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("Fim")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("Inicio")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Motivo")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<Guid>("ProfissionalId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProfissionalId", "Inicio");
+
+                    b.ToTable("Bloqueios", (string)null);
+                });
+
             modelBuilder.Entity("OdontoPrime.Domain.Models.Consulta", b =>
                 {
                     b.Property<Guid>("Id")
@@ -358,6 +391,15 @@ namespace OdontoPrime.Migrations
                         .HasFilter("\"PublicadoEm\" IS NULL");
 
                     b.ToTable("OutboxMensagens", (string)null);
+                });
+
+            modelBuilder.Entity("OdontoPrime.Domain.Models.Bloqueio", b =>
+                {
+                    b.HasOne("OdontoPrime.Domain.Models.Profissional", null)
+                        .WithMany()
+                        .HasForeignKey("ProfissionalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("OdontoPrime.Domain.Models.Consulta", b =>

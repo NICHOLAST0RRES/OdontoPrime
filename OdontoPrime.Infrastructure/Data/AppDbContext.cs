@@ -73,6 +73,8 @@ public class AppDbContext : DbContext , IClinicaDbContext
     public DbSet<Profissional> Profissionais { get; set; }
     public DbSet<TipoProfissional> TipoProfissionais { get; set; }
     
+    public DbSet<Bloqueio> Bloqueios => Set<Bloqueio>();
+    
     public DbSet<Consulta> Consultas { get; set; }
     
     public DbSet<TipoAtendimento> TiposAtendimento => Set<TipoAtendimento>();

@@ -30,6 +30,7 @@ builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.Configure<OpcoesDaClinica>(builder.Configuration.GetSection(OpcoesDaClinica.Secao));
 builder.Services.AddSingleton<RelogioDaClinica>();
 builder.Services.AddSingleton<PoliticaDeLembrete>();
+builder.Services.AddScoped<BloqueioService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     

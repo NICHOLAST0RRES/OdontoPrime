@@ -25,7 +25,7 @@ public abstract class TesteDeIntegracao(InfraDeTeste infra) : IAsyncLifetime
         var db = escopo.ServiceProvider.GetRequiredService<AppDbContext>();
 
         await db.Database.ExecuteSqlRawAsync(
-            """TRUNCATE "OutboxMensagens", "Consultas", "Pacientes", "Profissionais", "Convenios" RESTART IDENTITY CASCADE""",
+            """TRUNCATE "OutboxMensagens", "Consultas", "Bloqueios", "Pacientes", "Profissionais", "Convenios" RESTART IDENTITY CASCADE""",
             Ct);
 
         Relogio.Ajustar(NaClinica(10, 9, 10)); // padrão: sexta, 09/10, 10h em Salvador
